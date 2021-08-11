@@ -10,6 +10,8 @@ With that tool you can just create your diagram by declaring the interactions an
 
 Just like this:
 
+![image](https://user-images.githubusercontent.com/45007019/129010495-6a119bc8-2e96-4c00-a1af-27f00738cb46.png)
+
 
 ## My Diagram Source Code
 
