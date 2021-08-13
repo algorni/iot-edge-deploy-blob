@@ -33,49 +33,53 @@ namespace IoTEdgeDeployBlob.SDK
             
             Console.WriteLine("Deserialization done.");
 
-
             DownloadBlobResponse downloadBlobResponse = new DownloadBlobResponse();
 
-            try
+            foreach (var blob in downloadBlobRequest.Blobs)
             {
-                await downloadBlobFromStroageAccount(downloadBlobRequest);
-                                
-                downloadBlobResponse.BlobDownloaded = true;
-
-                return new MethodResponse(downloadBlobResponse.GetJsonByte(), 200);
-            }
-            catch (Exception ex)
-            {
-                downloadBlobResponse.BlobDownloaded = false;
-                downloadBlobResponse.Reason = ex.ToString();
+                BlobResponseInfo blobResponseInfo = new BlobResponseInfo() { BlobName = blob.BlobName };
                 
-                Console.WriteLine($"There was an error while downloading the Blob\n{ex.ToString()}");
+                try
+                {
+                    await downloadBlobFromStroageAccount(blob);
 
-                return new MethodResponse(downloadBlobResponse.GetJsonByte(), 500);
-            }                     
+                    blobResponseInfo.BlobDownloaded = true;
+                }
+                catch (Exception ex)
+                {
+                    blobResponseInfo.BlobDownloaded = false;
+                    blobResponseInfo.Reason = ex.ToString();
+
+                    Console.WriteLine($"There was an error while downloading the Blob\n{ex.ToString()}");
+                }
+
+                downloadBlobResponse.Blobs.Add(blobResponseInfo);
+            }
+            
+            return new MethodResponse(downloadBlobResponse.GetJsonByte(), 200);
         }
 
-        private static async Task downloadBlobFromStroageAccount(DownloadBlobRequest downloadBlobRequest)
+        private static async Task downloadBlobFromStroageAccount(BlobInfo blobInfo)
         {
-            Console.WriteLine($"Downlading blob {downloadBlobRequest.BlobName}.");
+            Console.WriteLine($"Downlading blob {blobInfo.BlobName}.");
 
-            var httpResponse = await httpClient.GetAsync(downloadBlobRequest.BlobSASUrl);
+            var httpResponse = await httpClient.GetAsync(blobInfo.BlobSASUrl);
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Downlad of blob {downloadBlobRequest.BlobName} done. Now saving into {downloadBlobRequest.BlobRemotePath}");
+                Console.WriteLine($"Downlad of blob {blobInfo.BlobName} done. Now saving into {blobInfo.BlobRemotePath}");
 
                 ///TODO: optimize using stream instead of byte array!!!
 
                 var blobContentByte = await httpResponse.Content.ReadAsByteArrayAsync();
 
-                await File.WriteAllBytesAsync(downloadBlobRequest.BlobRemotePath, blobContentByte);
+                await File.WriteAllBytesAsync(blobInfo.BlobRemotePath, blobContentByte);
 
-                Console.WriteLine($"Saving of blob {downloadBlobRequest.BlobName} done in {downloadBlobRequest.BlobRemotePath}!");
+                Console.WriteLine($"Saving of blob {blobInfo.BlobName} done in {blobInfo.BlobRemotePath}!");
             }
             else
             {
-                throw new ApplicationException($"An error occurred while downliading the blob {downloadBlobRequest.BlobName}.  HttpStatus: {httpResponse.StatusCode} ");
+                throw new ApplicationException($"An error occurred while downliading the blob {blobInfo.BlobName}.  HttpStatus: {httpResponse.StatusCode} ");
             }
         }
     }

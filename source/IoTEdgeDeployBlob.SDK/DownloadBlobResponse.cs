@@ -9,9 +9,15 @@ namespace IoTEdgeDeployBlob.SDK
 {
     public class DownloadBlobResponse
     {
-        public bool BlobDownloaded { get; set; }
+        /// <summary>
+        /// ctor
+        /// </summary>
+        public DownloadBlobResponse()
+        {
+            this.Blobs = new List<BlobResponseInfo> ();
+        }
 
-        public string Reason { get; set; }
+        public List<BlobResponseInfo> Blobs { get; set; }
 
         public byte[] GetJsonByte()
         {
@@ -28,5 +34,19 @@ namespace IoTEdgeDeployBlob.SDK
 
             return instance;
         }
+    }
+    
+    
+    public class BlobResponseInfo
+    {       
+        
+        public bool BlobDownloaded { get; set; }
+
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// The Name of the blob...  just for reference
+        /// </summary>
+        public object BlobName { get; set; }
     }
 }

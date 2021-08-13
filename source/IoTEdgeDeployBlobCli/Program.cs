@@ -22,7 +22,7 @@ namespace IoTEdgeDeployBlobCli
 
         private static string ioTHubConnectionString = null; //IOTHUB_CONNECTIONSTRING (service endpoint)
         private static string iotEdgeDeviceId = null;  //DEVICE_ID
-        private static string moduleName = null;  //MODULE_NAME 
+        private static string blobProxyModuleName = null;  //MODULE_NAME 
 
         private static string stroageAccountName = null;
         private static string stroageKey = null;
@@ -84,11 +84,11 @@ namespace IoTEdgeDeployBlobCli
                 return;
             }
                         
-            moduleName = configuration.GetValue<string>("MODULE_NAME", null);
+            blobProxyModuleName = configuration.GetValue<string>("BLOB_PROXY_MODULE_NAME", null);
 
-            if (string.IsNullOrEmpty(moduleName))
+            if (string.IsNullOrEmpty(blobProxyModuleName))
             {
-                logger.LogError("This tool requires a <MODULE_NAME> parameter as target to connect with IoT Hub Device Stream.");
+                logger.LogError("This tool requires a <BLOB_PROXY_MODULE_NAME> parameter as target to connect with IoT Hub Device Stream.");
                 return;
             }
 
@@ -172,28 +172,37 @@ namespace IoTEdgeDeployBlobCli
 
 
             DownloadBlobRequest downloadBlobRequest = new DownloadBlobRequest();
-            downloadBlobRequest.BlobName = blobName;
-            downloadBlobRequest.BlobSASUrl = blobSasUrl.ToString();
-            downloadBlobRequest.BlobRemotePath = blobRemotePath;
+
+            BlobInfo blobInfo = new BlobInfo()
+                {
+                    BlobName = blobName,
+                    BlobSASUrl = blobSasUrl.ToString(),
+                    BlobRemotePath = blobRemotePath
+                };
+
+            downloadBlobRequest.Blobs.Add(blobInfo);
 
             methodRequest.SetPayloadJson(downloadBlobRequest.ToJson());
 
             //perform a Direct Method to the remote device to initiate the device stream!
             CloudToDeviceMethodResult response = null;
 
-            response = await serviceClient.InvokeDeviceMethodAsync(iotEdgeDeviceId, moduleName, methodRequest);
+            response = await serviceClient.InvokeDeviceMethodAsync(iotEdgeDeviceId, blobProxyModuleName, methodRequest);
 
             DownloadBlobResponse responseObj = DownloadBlobResponse.FromJson(response.GetPayloadAsJson());
 
-            if (response.Status == 200)
+            foreach (var blobResponse in responseObj.Blobs)
             {
-                logger.LogInformation("Blob Downloaded remotely.");
+                if (blobResponse.BlobDownloaded)
+                {
+                    logger.LogInformation($"Blob {blobResponse.BlobName} Downloaded remotely.");
+                }
+                else
+                {
+                    logger.LogError($"Error while calling remote direct method to initiate the Blob download for {blobResponse.BlobName} on Edge.\n{blobResponse.Reason}");
+                }
             }
-            else
-            {
-                logger.LogError($"Error while calling remote direct method to initiate the Blob download on Edge.\n{responseObj.Reason}");
-            }
-                     
+
         }
 
         /// <summary>

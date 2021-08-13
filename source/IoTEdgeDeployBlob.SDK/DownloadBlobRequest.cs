@@ -10,19 +10,14 @@ namespace IoTEdgeDeployBlob.SDK
     public class DownloadBlobRequest
     {
         /// <summary>
-        /// The Blob SAS Url
+        /// ctor
         /// </summary>
-        public string BlobSASUrl { get; set; }
+        public DownloadBlobRequest()
+        {
+            this.Blobs = new List<BlobInfo>();
+        }
 
-        /// <summary>
-        /// The local path where to store the file
-        /// </summary>
-        public string BlobRemotePath { get; set; }
-
-        /// <summary>
-        /// The Name of the blob...  just for reference
-        /// </summary>
-        public object BlobName { get; set; }
+        public List<BlobInfo> Blobs { get; set; }
 
         /// <summary>
         /// static ctor
@@ -42,5 +37,23 @@ namespace IoTEdgeDeployBlob.SDK
 
             return jsonRepp;
         }
+    }
+
+    public class BlobInfo
+    {
+        /// <summary>
+        /// The Blob SAS Url
+        /// </summary>
+        public string BlobSASUrl { get; set; }
+
+        /// <summary>
+        /// The local path where to store the file
+        /// </summary>
+        public string BlobRemotePath { get; set; }
+
+        /// <summary>
+        /// The Name of the blob...  just for reference
+        /// </summary>
+        public object BlobName { get; set; }
     }
 }
