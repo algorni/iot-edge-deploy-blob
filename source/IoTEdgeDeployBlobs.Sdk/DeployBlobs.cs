@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 
 namespace IoTEdgeDeployBlobs.Sdk
 {
@@ -112,7 +113,7 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <returns></returns>
         public async Task<IEnumerable<DeviceJob>> GetDeploymentJobResponsesAsync(string jobId, string queryCondition="")
         {
-            List<DeviceJob> responses = new List<DeviceJob>();
+            List<DeviceJob> responses = new();
             string queryStr = $"SELECT * FROM devices.jobs where jobId = '{jobId}'";
             if (!String.IsNullOrEmpty(queryCondition))
             {
@@ -136,7 +137,7 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <returns></returns>
         public async Task<IEnumerable<string>> GetEdgeDevicesIdsAsync(string queryCondition = "")
         {
-            List<string> ids = new List<string>();
+            List<string> ids = new();
             string queryStr = $"SELECT * FROM devices where capabilities.iotEdge = true";
             if (!String.IsNullOrEmpty(queryCondition))
             {
@@ -153,11 +154,9 @@ namespace IoTEdgeDeployBlobs.Sdk
             return ids;
         }
 
-        private CloudToDeviceMethod PrepareDownloadBlobsDirectMethod(IEnumerable<BlobInfo> blobs)
+        private static CloudToDeviceMethod PrepareDownloadBlobsDirectMethod(IEnumerable<BlobInfo> blobs)
         {
-            _logger?.LogInformation("Preparing DownloadBlobs Direct Method (Cloud to Device) call...");
-
-            DownloadBlobsRequest downloadBlobRequest = new DownloadBlobsRequest();
+            DownloadBlobsRequest downloadBlobRequest = new();
             downloadBlobRequest.Blobs.AddRange(blobs);
 
             var methodRequest = new CloudToDeviceMethod(

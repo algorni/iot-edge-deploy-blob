@@ -54,6 +54,6 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <summary>
         /// The Name of the blob...  just for reference
         /// </summary>
-        public object Name { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -7,14 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.Module",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.Sdk", "IoTEdgeDeployBlobs.Sdk\IoTEdgeDeployBlobs.Sdk.csproj", "{18328D12-6951-4534-B3CE-DDEFEF139F3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.Cli", "IoTEdgeDeployBlobs.Cli\IoTEdgeDeployBlobs.Cli.csproj", "{834CA89D-D7E4-4008-A530-3AB8659B6F38}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{85472E4C-B14D-4005-BD54-4912472B69C2}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "IoTEdgeDeployBlobs.EdgeModules", "IoTEdgeDeployBlobs.EdgeModules\IoTEdgeDeployBlobs.EdgeModules.iotedgeproj", "{9387E81A-4846-4B09-8EE3-502FFA40D6CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.SampleConsole", "IoTEdgeDeployBlobs.SampleConsole\IoTEdgeDeployBlobs.SampleConsole.csproj", "{9430C1D6-C1C7-4F36-B67A-5F0C8E86F80D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +30,14 @@ Global
 		{18328D12-6951-4534-B3CE-DDEFEF139F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18328D12-6951-4534-B3CE-DDEFEF139F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18328D12-6951-4534-B3CE-DDEFEF139F3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{834CA89D-D7E4-4008-A530-3AB8659B6F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{834CA89D-D7E4-4008-A530-3AB8659B6F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{834CA89D-D7E4-4008-A530-3AB8659B6F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{834CA89D-D7E4-4008-A530-3AB8659B6F38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9387E81A-4846-4B09-8EE3-502FFA40D6CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9387E81A-4846-4B09-8EE3-502FFA40D6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9387E81A-4846-4B09-8EE3-502FFA40D6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9387E81A-4846-4B09-8EE3-502FFA40D6CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9430C1D6-C1C7-4F36-B67A-5F0C8E86F80D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9430C1D6-C1C7-4F36-B67A-5F0C8E86F80D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9430C1D6-C1C7-4F36-B67A-5F0C8E86F80D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9430C1D6-C1C7-4F36-B67A-5F0C8E86F80D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

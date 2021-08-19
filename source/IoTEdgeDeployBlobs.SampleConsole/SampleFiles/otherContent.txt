@@ -1,0 +1,2 @@
+SAMPLE CONETENT
+Distributed to IoT Edge Devices using the DeployBlobsModule

@@ -38,15 +38,15 @@ namespace IoTEdgeDeployBlobs.Sdk
     
     
     public class BlobResponseInfo
-    {       
-        
-        public bool BlobDownloaded { get; set; }
-
-        public string Reason { get; set; }
-
+    {
         /// <summary>
         /// The Name of the blob...  just for reference
         /// </summary>
-        public object BlobName { get; set; }
+        public string BlobName { get; set; }
+        public bool BlobDownloaded { get; set; }
+
+        public string Reason{ get; set; }
+
+        public Exception Exception { get; set; }
     }
 }

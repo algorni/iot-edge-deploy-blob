@@ -12,7 +12,7 @@ namespace IoTEdgeDeployBlobs.Sdk
 {
     public class AzureStorage
     {
-        private ILogger<AzureStorage> _logger;
+        private readonly ILogger<AzureStorage> _logger;
 
         public AzureStorage(ILogger<AzureStorage> logger)
         {
@@ -25,13 +25,13 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobContainerUri"></param>
         /// <param name="blobLocalPath"></param>
         /// <returns></returns>
-        public async Task UploadBlobToStorage(Uri blobContainerUri, string blobLocalPath, string blobName)
+        public async Task UploadBlobToStorageAsync(Uri blobContainerUri, string blobLocalPath, string blobName)
         {
-            DefaultAzureCredential defaultAzureCredential = new DefaultAzureCredential();
+            DefaultAzureCredential defaultAzureCredential = new();
 
-            BlobContainerClient blobContainerClient = new BlobContainerClient(blobContainerUri, defaultAzureCredential);
+            BlobContainerClient blobContainerClient = new(blobContainerUri, defaultAzureCredential);
 
-            await UploadBlobToStorage(blobContainerClient, blobLocalPath, blobName);
+            await UploadBlobToStorageAsync(blobContainerClient, blobLocalPath, blobName);
         }
         
 
@@ -45,15 +45,15 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobLocalPath"></param>
         /// <param name="blobName"></param>
         /// <returns></returns>
-        public async Task UploadBlobToStorage(string accountName, string accountKey, Uri blobContainerUri, string blobLocalPath, string blobName)
+        public async Task UploadBlobToStorageAsync(string accountName, string accountKey, Uri blobContainerUri, string blobLocalPath, string blobName)
         {
             // Create a SharedKeyCredential that we can use to authenticate
-            StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, accountKey);
+            StorageSharedKeyCredential credential = new(accountName, accountKey);
 
             //Blob Container client using Sas credential
-            BlobContainerClient blobContainerClient = new BlobContainerClient(blobContainerUri, credential); 
+            BlobContainerClient blobContainerClient = new(blobContainerUri, credential); 
 
-            await UploadBlobToStorage(blobContainerClient, blobLocalPath, blobName);
+            await UploadBlobToStorageAsync(blobContainerClient, blobLocalPath, blobName);
         }
 
 
@@ -64,9 +64,9 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobLocalPath"></param>
         /// <param name="blobName"></param>
         /// <returns></returns>
-        public async Task UploadBlobToStorage(BlobContainerClient blobContainerClient, string blobLocalPath, string blobName)
+        public async Task UploadBlobToStorageAsync(BlobContainerClient blobContainerClient, string blobLocalPath, string blobName)
         {
-            logInfo($"Uploading blob {blobName} from {blobLocalPath}");
+            _logger?.LogInformation($"Uploading blob {blobName} from {blobLocalPath}");
 
             // Get a reference to a blob named {blobName}
             BlobClient blobClient = blobContainerClient.GetBlobClient(blobName);
@@ -84,13 +84,13 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobName"></param>
         /// <param name="expireIn"></param>
         /// <returns></returns>
-        public Uri GetBlobDownladUri(Uri blobContainerUri, string blobName, TimeSpan expireIn)
+        public Uri GetBlobDownloadUri(Uri blobContainerUri, string blobName, TimeSpan expireIn)
         {
-            DefaultAzureCredential defaultAzureCredential = new DefaultAzureCredential();
+            DefaultAzureCredential defaultAzureCredential = new();
 
-            BlobContainerClient blobContainerClient = new BlobContainerClient(blobContainerUri, defaultAzureCredential);
+            BlobContainerClient blobContainerClient = new(blobContainerUri, defaultAzureCredential);
 
-            return GetBlobDownladUri(blobContainerClient, blobName, expireIn);
+            return GetBlobDownloadUri(blobContainerClient, blobName, expireIn);
         }
 
 
@@ -105,16 +105,16 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobName"></param>
         /// <param name="expireIn"></param>
         /// <returns></returns>
-        public Uri GetBlobDownladUri(string accountName, string accountKey, Uri blobContainerUri, string blobName, TimeSpan expireIn)
+        public Uri GetBlobDownloadUri(string accountName, string accountKey, Uri blobContainerUri, string blobName, TimeSpan expireIn)
         {
             // Create a SharedKeyCredential that we can use to authenticate
-            StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, accountKey);
+            StorageSharedKeyCredential credential = new(accountName, accountKey);
                       
             //Blob Container client using Sas credential
-            BlobContainerClient blobContainerClient = new BlobContainerClient(blobContainerUri, credential);
+            BlobContainerClient blobContainerClient = new(blobContainerUri, credential);
 
 
-            return GetBlobDownladUri(blobContainerClient, blobName, expireIn);
+            return GetBlobDownloadUri(blobContainerClient, blobName, expireIn);
         }
 
 
@@ -126,7 +126,7 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobName"></param>
         /// <param name="expireIn"></param>
         /// <returns></returns>
-        public Uri GetBlobDownladUri(BlobContainerClient blobContainerClient, string blobName, TimeSpan expireIn)
+        public Uri GetBlobDownloadUri(BlobContainerClient blobContainerClient, string blobName, TimeSpan expireIn)
         {            
             var blobClient = blobContainerClient.GetBlobClient(blobName);
 
@@ -138,24 +138,10 @@ namespace IoTEdgeDeployBlobs.Sdk
             {
                 var message = $"Cannot generate a SAS Uri for blob {blobName}";
 
-                logError(message);
+                _logger?.LogError(message);
 
                 throw new ApplicationException(message);
             }                
         }
-
-
-
-
-        private void logInfo(string message)
-        {
-            _logger?.LogInformation(message);
-        }
-
-        private void logError(string message)
-        {
-            _logger?.LogError(message);
-        }
-
     }
 }
