@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlobs.SDK
+namespace IoTEdgeDeployBlobs.Sdk
 {
     public class DownloadBlobsRequest
     {

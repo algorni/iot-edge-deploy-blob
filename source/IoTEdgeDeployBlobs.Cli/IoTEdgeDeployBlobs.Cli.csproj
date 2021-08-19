@@ -36,7 +36,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\IoTEdgeDeployBlob.SDK\IoTEdgeDeployBlobs.SDK.csproj" />
+    <ProjectReference Include="..\IoTEdgeDeployBlobs.Sdk\IoTEdgeDeployBlobs.Sdk.csproj" />
   </ItemGroup>
 
 </Project>

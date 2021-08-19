@@ -1,0 +1,33 @@
+[
+    {
+      "EndpointUrl": "opc.tcp://172.18.0.1:50000",
+      "UseSecurity": false,
+      "OpcNodes": [
+        { "Id": "ns=2;s=StepUp"  },
+        { "Id": "ns=2;s=AlternatingBoolean" },
+        { "Id": "ns=2;s=RandomSignedInt32" },
+        { "Id": "ns=2;s=RandomUnsignedInt32" },
+        { "Id": "ns=2;s=SpikeData" },
+        { "Id": "ns=2;s=DipData" },
+        { "Id": "ns=2;s=PositiveTrendData" },
+        { "Id": "ns=2;s=NegativeTrendData" },
+        { "Id": "ns=2;s=65e451f1-56f1-ce84-a44f-6addf176beaf" },
+        { "Id": "ns=2;s=9513141f-c697-8a1f-a236-e14864e4bf7e" },
+        { "Id": "ns=2;s=84ec863d-3659-aa9f-d68c-25ea83802bc9" },
+        { "Id": "ns=2;s=b251c5e1-6fe2-46cd-5931-4e1f108520bf" },
+        { "Id": "ns=2;s=8eea5905-ee80-793b-6774-483a719f9b22" },
+        { "Id": "ns=2;s=SlowUInt1", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=SlowUInt2", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=SlowUInt3", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=SlowUInt4", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=SlowUInt5", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=BadSlowUInt1", "OpcPublishingInterval": 10000 },
+        { "Id": "ns=2;s=FastUInt1" },
+        { "Id": "ns=2;s=FastUInt2" },
+        { "Id": "ns=2;s=FastUInt3" },
+        { "Id": "ns=2;s=FastUInt4" },
+        { "Id": "ns=2;s=FastUInt5" },
+        { "Id": "ns=2;s=BadFastUInt1" }
+      ]
+    }
+  ]

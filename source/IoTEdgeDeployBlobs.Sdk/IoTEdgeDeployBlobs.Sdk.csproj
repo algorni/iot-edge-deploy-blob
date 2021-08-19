@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>IoTEdgeDeployBlobs.SDK</AssemblyName>
-    <RootNamespace>IoTEdgeDeployBlobs.SDK</RootNamespace>
+    <AssemblyName>IoTEdgeDeployBlobs.Sdk</AssemblyName>
+    <RootNamespace>IoTEdgeDeployBlobs.Sdk</RootNamespace>
   </PropertyGroup>
 
   

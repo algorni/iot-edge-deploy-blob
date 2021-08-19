@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlobs.SDK
+namespace IoTEdgeDeployBlobs.Sdk
 {
     public class AzureStorage
     {
@@ -76,12 +76,6 @@ namespace IoTEdgeDeployBlobs.SDK
             // First upload something the blob so we have something to download
             await blobClient.UploadAsync(fileStream, overwrite: true);           
         }
-
-
-
-
-
-
 
         /// <summary>
         /// Get Blob SAS URI
@@ -155,14 +149,12 @@ namespace IoTEdgeDeployBlobs.SDK
 
         private void logInfo(string message)
         {
-            if (_logger != null)
-                _logger.LogInformation(message);
+            _logger?.LogInformation(message);
         }
 
         private void logError(string message)
         {
-            if (_logger != null)
-                _logger.LogError(message);
+            _logger?.LogError(message);
         }
 
     }

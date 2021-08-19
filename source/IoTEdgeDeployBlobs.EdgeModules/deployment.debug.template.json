@@ -3,7 +3,7 @@
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.0",
         "runtime": {
           "type": "docker",
           "settings": {
@@ -51,13 +51,23 @@
           }
         },
         "modules": {
-          "BlobProxyModule": {
+          "DeployBlobsModule": {
             "version": "1.0.0",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULEDIR<../BlobProxyModule>}",
+              "image": "${MODULEDIR<../IoTEdgeDeployBlobs.Module>.debug}",
+              "createOptions": {}
+            }
+          },
+          "SimulatedTemperatureSensor": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
               "createOptions": {}
             }
           }
@@ -66,8 +76,10 @@
     },
     "$edgeHub": {
       "properties.desired": {
-        "schemaVersion": "1.2",
-        "routes": {                 
+        "schemaVersion": "1.0",
+        "routes": {
+          "DeployBlobsModuleToIoTHub": "FROM /messages/modules/DeployBlobsModule/outputs/* INTO $upstream",
+          "SensorToDeployBlobsModule": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/DeployBlobsModule/inputs/input1\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

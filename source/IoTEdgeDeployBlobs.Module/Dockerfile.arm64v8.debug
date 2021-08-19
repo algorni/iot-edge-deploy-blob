@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:5.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1-buster-slim-arm64v8 AS base
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends unzip procps && \
@@ -8,17 +8,17 @@ RUN useradd -ms /bin/bash moduleuser
 USER moduleuser
 RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster-arm64v8 AS build-env
 WORKDIR /app
 
+COPY *.csproj ./
+RUN dotnet restore
+
 COPY . ./
-RUN dotnet publish BlobProxyModule -c Debug -o out 
+RUN dotnet publish -c Debug -o out
 
 FROM base
 WORKDIR /app
 COPY --from=build-env /app/out ./
 
-#create a blob folder where the blob will be stored!
-RUN mkdir blobs
-
-ENTRYPOINT ["dotnet", "BlobProxyModule.dll"]
+ENTRYPOINT ["dotnet", "IoTEdgeDeployBlobs.Module.dll"]
