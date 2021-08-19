@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlob.SDK
+namespace IoTEdgeDeployBlobs.SDK
 {
-    public class DownloadBlobRequest
+    public class DownloadBlobsRequest
     {
         /// <summary>
         /// ctor
         /// </summary>
-        public DownloadBlobRequest()
+        public DownloadBlobsRequest()
         {
             this.Blobs = new List<BlobInfo>();
         }
@@ -24,9 +24,9 @@ namespace IoTEdgeDeployBlob.SDK
         /// </summary>
         /// <param name="dataAsJson"></param>
         /// <returns></returns>
-        public static DownloadBlobRequest FromJson(string dataAsJson)
+        public static DownloadBlobsRequest FromJson(string dataAsJson)
         {
-            DownloadBlobRequest instance = JsonConvert.DeserializeObject<DownloadBlobRequest>(dataAsJson);
+            DownloadBlobsRequest instance = JsonConvert.DeserializeObject<DownloadBlobsRequest>(dataAsJson);
 
             return instance;
         }
@@ -44,16 +44,16 @@ namespace IoTEdgeDeployBlob.SDK
         /// <summary>
         /// The Blob SAS Url
         /// </summary>
-        public string BlobSASUrl { get; set; }
+        public string SasUrl { get; set; }
 
         /// <summary>
         /// The local path where to store the file
         /// </summary>
-        public string BlobRemotePath { get; set; }
+        public string DownloadPath { get; set; }
 
         /// <summary>
         /// The Name of the blob...  just for reference
         /// </summary>
-        public object BlobName { get; set; }
+        public object Name { get; set; }
     }
 }

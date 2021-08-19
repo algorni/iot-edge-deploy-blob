@@ -7,21 +7,22 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlob.SDK
+namespace IoTEdgeDeployBlobs.SDK
 {    
-    public class DirectMethodDownloadBlob
+    public class DownloadBlobsDirectMethod
     {
         private static HttpClient httpClient = new HttpClient();
 
         /// <summary>
         /// The name of the Direct Method to initiate to listen for a Device Stream request from the device side.
         /// </summary>
-        public const string DownloadBlob = "DownloadBlob";
+        public const string DownloadBlobMethodName = "DownloadBlob";
 
 
         public static async Task<MethodResponse> Execute(MethodRequest methodRequest, object parameter)
         {
-            Console.WriteLine("Download Blob Direct Method initiate.");
+            Console.WriteLine();
+            Console.WriteLine(new String('-', 40));
 
             var moduleClient = parameter as ModuleClient;
 
@@ -29,15 +30,15 @@ namespace IoTEdgeDeployBlob.SDK
 
             Console.WriteLine($"Deserializing DirectMethod request: {directMethodRequestJson}");
 
-            DownloadBlobRequest downloadBlobRequest = DownloadBlobRequest.FromJson(directMethodRequestJson);
+            DownloadBlobsRequest downloadBlobRequest = DownloadBlobsRequest.FromJson(directMethodRequestJson);
             
             Console.WriteLine("Deserialization done.");
 
-            DownloadBlobResponse downloadBlobResponse = new DownloadBlobResponse();
+            DownloadBlobsResponse downloadBlobResponse = new DownloadBlobsResponse();
 
             foreach (var blob in downloadBlobRequest.Blobs)
             {
-                BlobResponseInfo blobResponseInfo = new BlobResponseInfo() { BlobName = blob.BlobName };
+                BlobResponseInfo blobResponseInfo = new BlobResponseInfo() { BlobName = blob.Name };
                 
                 try
                 {
@@ -55,31 +56,34 @@ namespace IoTEdgeDeployBlob.SDK
 
                 downloadBlobResponse.Blobs.Add(blobResponseInfo);
             }
-            
+
+            Console.WriteLine(new String('=', 40));
+
             return new MethodResponse(downloadBlobResponse.GetJsonByte(), 200);
         }
 
+
         private static async Task downloadBlobFromStroageAccount(BlobInfo blobInfo)
         {
-            Console.WriteLine($"Downlading blob {blobInfo.BlobName}.");
+            Console.WriteLine($"Downloading blob {blobInfo.Name}.");
 
-            var httpResponse = await httpClient.GetAsync(blobInfo.BlobSASUrl);
+            var httpResponse = await httpClient.GetAsync(blobInfo.SasUrl);
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Downlad of blob {blobInfo.BlobName} done. Now saving into {blobInfo.BlobRemotePath}");
+                Console.WriteLine($"Download of blob {blobInfo.Name} done. Now saving into {blobInfo.DownloadPath}");
 
                 ///TODO: optimize using stream instead of byte array!!!
 
                 var blobContentByte = await httpResponse.Content.ReadAsByteArrayAsync();
 
-                await File.WriteAllBytesAsync(blobInfo.BlobRemotePath, blobContentByte);
+                await File.WriteAllBytesAsync(blobInfo.DownloadPath, blobContentByte);
 
-                Console.WriteLine($"Saving of blob {blobInfo.BlobName} done in {blobInfo.BlobRemotePath}!");
+                Console.WriteLine($"Saving of blob {blobInfo.Name} done in {blobInfo.DownloadPath}!");
             }
             else
             {
-                throw new ApplicationException($"An error occurred while downliading the blob {blobInfo.BlobName}.  HttpStatus: {httpResponse.StatusCode} ");
+                throw new ApplicationException($"An error occurred while downliading the blob {blobInfo.Name}.  HttpStatus: {httpResponse.StatusCode} ");
             }
         }
     }

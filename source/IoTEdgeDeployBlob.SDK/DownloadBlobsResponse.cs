@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlob.SDK
+namespace IoTEdgeDeployBlobs.SDK
 {
-    public class DownloadBlobResponse
+    public class DownloadBlobsResponse
     {
         /// <summary>
         /// ctor
         /// </summary>
-        public DownloadBlobResponse()
+        public DownloadBlobsResponse()
         {
             this.Blobs = new List<BlobResponseInfo> ();
         }
@@ -28,9 +28,9 @@ namespace IoTEdgeDeployBlob.SDK
             return bytes;
         }
 
-        public static DownloadBlobResponse FromJson(string dataAsJson)
+        public static DownloadBlobsResponse FromJson(string dataAsJson)
         {
-            DownloadBlobResponse instance = JsonConvert.DeserializeObject<DownloadBlobResponse>(dataAsJson);
+            DownloadBlobsResponse instance = JsonConvert.DeserializeObject<DownloadBlobsResponse>(dataAsJson);
 
             return instance;
         }

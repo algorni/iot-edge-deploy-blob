@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
-using IoTEdgeDeployBlob.SDK;
+using IoTEdgeDeployBlobs.SDK;
 using Microsoft.Extensions.Logging.Console;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace IoTEdgeDeployBlobCli
+namespace IoTEdgeDeployBlobs.SampleCli
 {
     class Program
     {
@@ -30,13 +32,14 @@ namespace IoTEdgeDeployBlobCli
         
         private static string blobName = null;
         private static string blobLocalPath = null;
-        private static string blobRemotePath = null;
+        private static string blobDownloadPath = null;
 
 
         static async Task Main(string[] args)
         {
             configuration = new ConfigurationBuilder()
              .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+             .AddJsonFile("appSettings.local.json", optional: true, reloadOnChange: true)
              .AddEnvironmentVariables()
              .AddCommandLine(args)
              .Build();
@@ -48,24 +51,24 @@ namespace IoTEdgeDeployBlobCli
                     .AddFilter("Microsoft", LogLevel.Warning)
                     .AddFilter("System", LogLevel.Warning)
                     .AddFilter("IoTEdgeDeployBlobCli.Program", LogLevel.Information)
-                    //.AddConsole(options =>
-                    //{
-                    //    options.FormatterName = ConsoleFormatterNames.Simple;
-                    //})
+                    .AddConsole(options =>
+                    {
+                        options.FormatterName = ConsoleFormatterNames.Simple;
+                    })
                     .AddSimpleConsole(options =>
                     {
                         options.ColorBehavior = LoggerColorBehavior.Enabled;
                         options.UseUtcTimestamp = true;
+                        options.IncludeScopes = false;
+                        options.SingleLine = true;
                     });
             });
 
             ILogger logger = loggerFactory.CreateLogger<Program>();
 
-
-
             logger.LogInformation("Hello IoT Edge Deploy Blob command line interface");
             logger.LogInformation("-----------------------");
-                      
+
 
             //checking configuration requirements
             ioTHubConnectionString = configuration.GetValue<string>("IOTHUB_CONNECTIONSTRING");
@@ -83,7 +86,7 @@ namespace IoTEdgeDeployBlobCli
                 logger.LogError("This tool requires a <IOT_EDGE_DEVICE_ID> parameter as target to connect with IoT Hub Device Stream.");
                 return;
             }
-                        
+
             blobProxyModuleName = configuration.GetValue<string>("BLOB_PROXY_MODULE_NAME", null);
 
             if (string.IsNullOrEmpty(blobProxyModuleName))
@@ -116,7 +119,7 @@ namespace IoTEdgeDeployBlobCli
                 logger.LogError("This tool requires a <STORAGE_BLOB_CONTAINER_URL> parameter reppresenting the storage blob container URL. Like: https://<yourstroage>.blob.core.windows.net/<yourcontainer>");
                 return;
             }
-            
+
             blobName = configuration.GetValue<string>("BLOB_NAME");
 
             if (string.IsNullOrEmpty(blobName))
@@ -133,65 +136,81 @@ namespace IoTEdgeDeployBlobCli
                 return;
             }
 
-            blobRemotePath = configuration.GetValue<string>("BLOB_REMOTE_PATH");
+            blobDownloadPath = configuration.GetValue<string>("BLOB_REMOTE_PATH");
 
-            if (string.IsNullOrEmpty(blobRemotePath))
+            if (string.IsNullOrEmpty(blobDownloadPath))
             {
                 logger.LogError("This tool requires a <BLOB_REMOTE_PATH> which is the target landing path.");
                 return;
             }
- 
+
 
             //upload the blob
-            ILogger<AzureStorageHelper> loggerAzureStorageHelper = loggerFactory.CreateLogger<AzureStorageHelper>();
+            ILogger<AzureStorage> loggerAzureStorageHelper = loggerFactory.CreateLogger<AzureStorage>();
 
-            AzureStorageHelper azureStorageHelper = new AzureStorageHelper(loggerAzureStorageHelper);
+            AzureStorage azureStorageHelper = new AzureStorage(loggerAzureStorageHelper);
 
             var stroageBlobContainerUri = new Uri(stroageBlobContainerUrl);
 
             await azureStorageHelper.UploadBlobToStorage(stroageAccountName, stroageKey, stroageBlobContainerUri, blobLocalPath, blobName);
 
-            var blobSasUrl = azureStorageHelper.GetBlobDownladUri(stroageAccountName, stroageKey, stroageBlobContainerUri, blobName, TimeSpan.FromMinutes(10) );
+            var blobSasUrl = azureStorageHelper.GetBlobDownladUri(stroageAccountName, stroageKey, stroageBlobContainerUri, blobName, TimeSpan.FromMinutes(10));
 
-
-
-
-            //now start the Direct Method call to instruct the 
-
-            Microsoft.Azure.Devices.TransportType transportType = Microsoft.Azure.Devices.TransportType.Amqp;
-
-            //initiate a client to IoT Hub 
-            ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ioTHubConnectionString, transportType);
-
-            logger.LogInformation("IoT Hub Service Client connected");
-
-            //initiating the Direct Method to start the stream on the other end...
-            var methodRequest = new CloudToDeviceMethod(
-                    DirectMethodDownloadBlob.DownloadBlob //constant with the Direct Method name
-                );
-
-
-            DownloadBlobRequest downloadBlobRequest = new DownloadBlobRequest();
 
             BlobInfo blobInfo = new BlobInfo()
-                {
-                    BlobName = blobName,
-                    BlobSASUrl = blobSasUrl.ToString(),
-                    BlobRemotePath = blobRemotePath
-                };
+            {
+                Name = blobName,
+                SasUrl = blobSasUrl.ToString(),
+                DownloadPath = blobDownloadPath
+            };
 
-            downloadBlobRequest.Blobs.Add(blobInfo);
+            List<BlobInfo> blobs = new List<BlobInfo>() { blobInfo };
 
-            methodRequest.SetPayloadJson(downloadBlobRequest.ToJson());
 
-            //perform a Direct Method to the remote device to initiate the device stream!
-            CloudToDeviceMethodResult response = null;
+            DeployBlobs deployBlobs = new DeployBlobs(ioTHubConnectionString, blobProxyModuleName, logger);
 
-            response = await serviceClient.InvokeDeviceMethodAsync(iotEdgeDeviceId, blobProxyModuleName, methodRequest);
+            await DeploySingle(logger, blobs, deployBlobs);
 
-            DownloadBlobResponse responseObj = DownloadBlobResponse.FromJson(response.GetPayloadAsJson());
+            await ScheduledDeployJob(blobs, deployBlobs);
 
-            foreach (var blobResponse in responseObj.Blobs)
+        }
+
+        private static async Task ScheduledDeployJob(List<BlobInfo> blobs, DeployBlobs deployBlobs)
+        {
+            Console.WriteLine();
+            Console.WriteLine("> Deploy to Multiple Devices thru Scheduled Job Test:");
+
+            var jobResponse = await deployBlobs.ScheduleDeploymentJobAsync(blobs, $"deviceId IN [ '{iotEdgeDeviceId}' ]");
+
+            do
+            {
+                Console.WriteLine($"Job Status: {jobResponse.Status.ToString()}...");
+                await Task.Delay(1000);
+
+                jobResponse = await deployBlobs.GetDeploymentJobAsync(jobResponse.JobId);
+            }
+            while ((jobResponse.Status != JobStatus.Completed) && (jobResponse.Status != JobStatus.Failed));
+
+            Console.WriteLine("Final Status:");
+            Console.WriteLine("JobStats: " + JsonConvert.SerializeObject(jobResponse.DeviceJobStatistics, Formatting.Indented));
+            Console.WriteLine("Job Status : " + jobResponse.Status.ToString());
+            Console.WriteLine();
+
+            //GATHER RESPONSES:
+            var deviceJobs = await deployBlobs.GetDeploymentJobResponsesAsync(jobResponse.JobId);
+            foreach(var deviceJob in deviceJobs)
+            {
+                Console.WriteLine($"Job {deviceJob.JobId} for device {deviceJob.DeviceId} status: {deviceJob.Status}. Response: {deviceJob.Outcome?.DeviceMethodResponse?.GetPayloadAsJson()}\n");
+            }
+        }
+
+        private static async Task DeploySingle(ILogger logger, List<BlobInfo> blobs, DeployBlobs deployBlobs)
+        {
+            Console.WriteLine();
+            Console.WriteLine("> Deploy to Single Devices thru Direct Method:");
+
+            var response = await deployBlobs.SingleDeviceDeploymentAsync(iotEdgeDeviceId, blobs);
+            foreach (var blobResponse in response.Blobs)
             {
                 if (blobResponse.BlobDownloaded)
                 {
@@ -202,8 +221,8 @@ namespace IoTEdgeDeployBlobCli
                     logger.LogError($"Error while calling remote direct method to initiate the Blob download for {blobResponse.BlobName} on Edge.\n{blobResponse.Reason}");
                 }
             }
-
         }
+
 
         /// <summary>
         /// Handles cleanup operations when app is cancelled or unloads

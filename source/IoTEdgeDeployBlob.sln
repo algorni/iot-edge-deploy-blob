@@ -3,13 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "IoTEdgeDeployBlobEdgeModules", "IoTEdgeDeployBlobEdgeModules\IoTEdgeDeployBlobEdgeModules.iotedgeproj", "{9387E81A-4846-4B09-8EE3-502FFA40D6CB}"
+Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "IoTEdgeDeployBlobsEdgeModules", "IoTEdgeDeployBlobEdgeModules\IoTEdgeDeployBlobsEdgeModules.iotedgeproj", "{9387E81A-4846-4B09-8EE3-502FFA40D6CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobProxyModule", "BlobProxyModule\BlobProxyModule.csproj", "{5FC869AA-5CCD-4F6E-9A40-28AE107064C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlob.SDK", "IoTEdgeDeployBlob.SDK\IoTEdgeDeployBlob.SDK.csproj", "{18328D12-6951-4534-B3CE-DDEFEF139F3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.SDK", "IoTEdgeDeployBlob.SDK\IoTEdgeDeployBlobs.SDK.csproj", "{18328D12-6951-4534-B3CE-DDEFEF139F3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTEdgeDeployBlobCli", "IoTEdgeDeployBlobCli\IoTEdgeDeployBlobCli.csproj", "{834CA89D-D7E4-4008-A530-3AB8659B6F38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeployBlobs.SampleCli", "IoTEdgeDeployBlobCli\IoTEdgeDeployBlobs.SampleCli.csproj", "{834CA89D-D7E4-4008-A530-3AB8659B6F38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{85472E4C-B14D-4005-BD54-4912472B69C2}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

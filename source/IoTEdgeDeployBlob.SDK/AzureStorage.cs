@@ -8,13 +8,13 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace IoTEdgeDeployBlob.SDK
+namespace IoTEdgeDeployBlobs.SDK
 {
-    public class AzureStorageHelper
+    public class AzureStorage
     {
-        private ILogger<AzureStorageHelper> _logger;
+        private ILogger<AzureStorage> _logger;
 
-        public AzureStorageHelper(ILogger<AzureStorageHelper> logger)
+        public AzureStorage(ILogger<AzureStorage> logger)
         {
             _logger = logger;
         }
@@ -57,9 +57,6 @@ namespace IoTEdgeDeployBlob.SDK
         }
 
 
-
-
-
         /// <summary>
         /// Upload a Blob to the Storage Account
         /// </summary>
@@ -77,7 +74,7 @@ namespace IoTEdgeDeployBlob.SDK
             var fileStream = File.OpenRead(blobLocalPath);
 
             // First upload something the blob so we have something to download
-            await blobClient.UploadAsync(fileStream);           
+            await blobClient.UploadAsync(fileStream, overwrite: true);           
         }
 
 
