@@ -58,7 +58,7 @@ namespace IoTEdgeDeployBlobs.Sdk
                 deployBlobsModuleCondition = $"{ deployBlobsModuleCondition } AND ({queryCondition})";
             }
 
-            _logger?.LogInformation($"Scheduling to deploy blobs to multiple IoT Edge Devices matching the following quey: {deployBlobsModuleCondition}.");
+            _logger?.LogInformation($"Scheduling DeployBlobs to IoT Edge Devices: {deployBlobsModuleCondition}.");
           
             return await StartDownloadJobAsync(jobId, deployBlobsModuleCondition, downloadMethod);
         }
@@ -119,7 +119,7 @@ namespace IoTEdgeDeployBlobs.Sdk
                 queryStr += $" and ({queryCondition})";
             }
 
-            _logger.LogInformation($"Gathering Job Deployment Responses with registry query: {queryStr}");
+            _logger.LogInformation($"Gathering Responses with registry query: {queryStr}");
             var query = _registryManager.CreateQuery(queryStr);
             while (query.HasMoreResults) //TODO: Doble check
             {

@@ -59,24 +59,24 @@ namespace IoTEdgeDeployBlobs.Cli
             ILogger loggerDeployBlobs = loggerFactory.CreateLogger<DeployBlobs>();
             DeployBlobs deployBlobs = new DeployBlobs(ioTHubConnectionString, deployBlobsModuleName, loggerDeployBlobs);
 
-            ////Deploy blob to a single device directly by using a direct method
-            //await DeploySingleDevice(logger, blobs, deployBlobs);
+            await DeploySingleDevice(blobs, deployBlobs);
 
-            ////Deploy blob to all devices running the IotEdgeDeployModule using an Scheduled Job
-            //await ScheduledDeployJob(blobs, deployBlobs);
+            //Deploy blob to all devices running the IotEdgeDeployModule using an Scheduled Job
+            await ScheduledDeployJob(blobs, deployBlobs);
 
             //Deploy blob to certain devices running the IotEdgeDeployModule using an Scheduled Job
             IEnumerable<string> devicesIds = await deployBlobs.GetEdgeDevicesIdsAsync("tags.deviceType = 'Edge' or tags.deviceType = 'Edge-SQL-Test'");
             await ScheduledDeployJob(blobs, deployBlobs, devicesIds);
         }
 
-        private static async Task DeploySingleDevice(ILogger logger, List<BlobInfo> blobs, DeployBlobs deployBlobs)
+        private static async Task DeploySingleDevice(List<BlobInfo> blobs, DeployBlobs deployBlobs)
         {
             logger.LogInformation("> Deploy to Single Devices thru Direct Method:");
 
             var response = await deployBlobs.DeployBlobsAsync(iotEdgeDeviceId, blobs);
             foreach (var blobResponse in response.Blobs)
             {
+                //TODO: Extract and share with schedule
                 if (blobResponse.BlobDownloaded)
                 {
                     logger.LogInformation($"Blob {blobResponse.BlobName} Downloaded remotely.");
@@ -90,20 +90,22 @@ namespace IoTEdgeDeployBlobs.Cli
 
         private static async Task ScheduledDeployJob(List<BlobInfo> blobs, DeployBlobs deployBlobs, IEnumerable<string> devicesIds = null)
         {
-            logger.LogInformation("> Deploy to Multiple Devices thru Scheduled Job Test:");
+            logger.LogInformation("> Deploy to Multiple Devices thru Scheduled Job Test.");
             JobResponse jobResponse = null;
             if (devicesIds == null){
                 //the following scheduled job will deploy the blobs to all devices running the IoTEdgeDeployBlobs module
+                logger.LogInformation("Targeting to all Edge Devices running DeployBlobsModule.");
                 jobResponse = await deployBlobs.ScheduleDeployBlobsJobAsync(blobs);
             }
             else
             {
                 //the following scheduled job will deploy the blobs to all devices running the IoTEdgeDeployBlobs module and which deviceId is in the list provided
-                 jobResponse = await deployBlobs.ScheduleDeployBlobsJobAsync(blobs, devicesIds);
+                logger.LogInformation($"Targeting to all Edge Devices running DeployBlobsModule with following IDs: {String.Join(", ",devicesIds)}.");
+                jobResponse = await deployBlobs.ScheduleDeployBlobsJobAsync(blobs, devicesIds);
             }
             //optionally, you can provide a queryCondition over the device.modules schema to create a custom filter
 
-
+            logger.LogInformation($"Created scheduled job with jobId '{jobResponse}'");
             do
             {
                 logger.LogInformation($"Job Status: {jobResponse.Status.ToString()}...");
@@ -113,15 +115,17 @@ namespace IoTEdgeDeployBlobs.Cli
             }
             while ((jobResponse.Status != JobStatus.Completed) && (jobResponse.Status != JobStatus.Failed));
 
-            logger.LogInformation("Final Status:");
-            logger.LogInformation("JobStats: " + JsonConvert.SerializeObject(jobResponse.DeviceJobStatistics, Formatting.Indented));
-            logger.LogInformation("Job Status : " + jobResponse.Status.ToString());
+            logger.LogInformation("Job Final Status : " + jobResponse.Status.ToString());
+            logger.LogInformation("Job Stats: " + JsonConvert.SerializeObject(jobResponse.DeviceJobStatistics, Formatting.Indented));
 
             //GATHER RESPONSES:
             var deviceJobs = await deployBlobs.GetDeploymentJobResponsesAsync(jobResponse.JobId);
             foreach (var deviceJob in deviceJobs)
             {
-                logger.LogInformation($"Job '{deviceJob.JobId}' for device '{deviceJob.DeviceId}' status: '{deviceJob.Status}'. Response: {deviceJob.Outcome?.DeviceMethodResponse?.GetPayloadAsJson()}");
+
+                logger.LogInformation($"Edge Device: {deviceJob.DeviceId}");
+                logger.LogInformation($"Response Payload:", deviceJob.Outcome?.DeviceMethodResponse?.GetPayloadAsJson());
+                logger.LogInformation($"--");
             }
         }
 
