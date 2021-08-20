@@ -35,18 +35,4 @@ namespace IoTEdgeDeployBlobs.Sdk
             return instance;
         }
     }
-    
-    
-    public class BlobResponseInfo
-    {
-        /// <summary>
-        /// The Name of the blob...  just for reference
-        /// </summary>
-        public string BlobName { get; set; }
-        public bool BlobDownloaded { get; set; }
-
-        public string Reason{ get; set; }
-
-        public Exception Exception { get; set; }
-    }
 }

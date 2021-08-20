@@ -16,23 +16,21 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <summary>
         /// The name of the Direct Method to initiate to listen for a Device Stream request from the device side.
         /// </summary>
-        public const string DownloadBlobMethodName = "DownloadBlob";
+        public const string DownloadBlobMethodName = "DownloadBlobs";
 
 
-        public static async Task<MethodResponse> Execute(MethodRequest methodRequest, object parameter)
+        public static async Task<MethodResponse> DownloadBlobs(MethodRequest methodRequest, object objectContext)
         {
-            Console.WriteLine();
             Console.WriteLine(new String('-', 40));
 
-            //var moduleClient = parameter as ModuleClient;
-            
+            var moduleClient = objectContext as ModuleClient;
+            Console.WriteLine(moduleClient.ProductInfo);
+
             var directMethodRequestJson = methodRequest.DataAsJson;
 
-            Console.WriteLine($"Deserializing DirectMethod request: {directMethodRequestJson}");
+            Console.WriteLine($"New DownloadBlobs request: {directMethodRequestJson}");
 
             DownloadBlobsRequest downloadBlobRequest = DownloadBlobsRequest.FromJson(directMethodRequestJson);
-            
-            Console.WriteLine("Deserialization done.");
 
             DownloadBlobsResponse downloadBlobResponse = new();
 
@@ -42,18 +40,20 @@ namespace IoTEdgeDeployBlobs.Sdk
                 
                 try
                 {
-                    await DownloadBlobFromStroageAccountAsync(blob);
+                    await DownloadBlobsFromStroageAccountAsync(blob);
 
                     blobResponseInfo.BlobDownloaded = true;
-                    blobResponseInfo.Reason = $"Successfully downloaded to {blob.DownloadPath}";
+                    var reason = $"Successfully downloaded {blob.Name} to {blob.DownloadPath}";
+                    blobResponseInfo.Reason = reason;
+                    Console.WriteLine(reason);
                 }
                 catch (Exception ex)
                 {
                     blobResponseInfo.BlobDownloaded = false;
-                    blobResponseInfo.Reason = $"Exception while downloading to {blob.DownloadPath}. Message: {ex.Message}";
+                    blobResponseInfo.Reason = $"Exception downloading to {blob.DownloadPath}. Message: {ex.Message}";
                     blobResponseInfo.Exception = ex;
 
-                    Console.WriteLine($"There was an error while downloading the Blob\n{ex}");
+                    Console.WriteLine($"Error downloading {blob.Name} to {blob.DownloadPath}.\n{ex}");
                 }
 
                 downloadBlobResponse.Blobs.Add(blobResponseInfo);
@@ -65,34 +65,20 @@ namespace IoTEdgeDeployBlobs.Sdk
         }
 
 
-        private static async Task DownloadBlobFromStroageAccountAsync(BlobInfo blobInfo)
+        private static async Task DownloadBlobsFromStroageAccountAsync(BlobInfo blobInfo)
         {
-            Console.WriteLine($"Downloading blob {blobInfo.Name}.");
-
             var httpResponse = await _httpClient.GetAsync(blobInfo.SasUrl);
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Download of blob {blobInfo.Name} done. Now saving into {blobInfo.DownloadPath}");
-
-                ///TODO: optimize using stream instead of byte array!!!
-
-                using (var contentStream = await httpResponse.Content.ReadAsStreamAsync())
-                {
-                    FileStream fs = File.Create(blobInfo.DownloadPath, 1024, FileOptions.Asynchronous);
-                    await contentStream. CopyToAsync(fs);
-                    fs.Close();
-                }
-
-
-                //var blobContentByte = await httpResponse.Content.ReadAsByteArrayAsync();
-                //await File.WriteAllBytesAsync(blobInfo.DownloadPath, blobContentByte);
-
-                Console.WriteLine($"Saving of blob {blobInfo.Name} done in {blobInfo.DownloadPath}!");
+                using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+                FileStream fs = File.Create(blobInfo.DownloadPath, 1024, FileOptions.Asynchronous);
+                await contentStream.CopyToAsync(fs);
+                fs.Close();
             }
             else
             {
-                throw new ApplicationException($"An error occurred while downliading the blob {blobInfo.Name}.  HttpStatus: {httpResponse.StatusCode} ");
+                throw new Exception($"Error downloading {blobInfo.Name} from {blobInfo.SasUrl}.  Http Status: {httpResponse.StatusCode}. Reason: {httpResponse.ReasonPhrase}.");
             }
         }
     }

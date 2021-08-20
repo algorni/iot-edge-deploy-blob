@@ -38,22 +38,4 @@ namespace IoTEdgeDeployBlobs.Sdk
             return jsonRepp;
         }
     }
-
-    public class BlobInfo
-    {
-        /// <summary>
-        /// The Blob SAS Url
-        /// </summary>
-        public string SasUrl { get; set; }
-
-        /// <summary>
-        /// The local path where to store the file
-        /// </summary>
-        public string DownloadPath { get; set; }
-
-        /// <summary>
-        /// The Name of the blob...  just for reference
-        /// </summary>
-        public string Name { get; set; }
-    }
 }

@@ -19,16 +19,15 @@ namespace IoTEdgeDeployBlobs.Sdk
 
         public DeployBlobs(string iotHubConnectionString, string deployBlobsModuleName, ILogger logger = null)
         {
-            //TODO: Remove module private vars
             _deployBlobsModuleName = deployBlobsModuleName;
             _logger = logger;
             _serviceClient = ServiceClient.CreateFromConnectionString(iotHubConnectionString, TransportType.Amqp);
             _registryManager = RegistryManager.CreateFromConnectionString(iotHubConnectionString);
-            _logger?.LogInformation("ServiceClient connected created. DeployBlobs connected to IoT Hub");
-
             _jobClient = JobClient.CreateFromConnectionString(iotHubConnectionString);
-        
+
+            _logger?.LogInformation("Module dependencies Service Client, RegistryManager and JobClient ready.");
         }
+
         public async Task<DownloadBlobsResponse> DeployBlobsAsync(string targetEdgeDeviceId, IEnumerable<BlobInfo> blobs)
         {
             CloudToDeviceMethod methodRequest = PrepareDownloadBlobsDirectMethod(blobs);
@@ -45,7 +44,7 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// Deploy the list of blobs to the IoT Edge Devices executing the deployBlobs module and the query condition. Returns a JobId that can be used to monitor the JobStatus.
         /// </summary>
         /// <param name="blobs">List of blobs to be downloaded by the deployBlob module at the target devices.</param>
-        /// <param name="queryCondition">Query condition to filter target devices based on the devices.modules schema.</param>
+        /// <param name="queryCondition">Query condition to filter target devices based on the 'devices.modules' schema.</param>
         /// <returns></returns>
         public async Task<JobResponse> ScheduleDeployBlobsJobAsync(List<BlobInfo> blobs, string queryCondition = "")
         {
@@ -58,8 +57,6 @@ namespace IoTEdgeDeployBlobs.Sdk
             {
                 deployBlobsModuleCondition = $"{ deployBlobsModuleCondition } AND ({queryCondition})";
             }
-
-            _logger?.LogInformation($"Scheduling DeployBlobs to IoT Edge Devices: {deployBlobsModuleCondition}.");
           
             return await StartDownloadJobAsync(jobId, deployBlobsModuleCondition, downloadMethod);
         }
@@ -68,19 +65,17 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// Deploy the list of blobs to the IoT Edge Devices executing the deployBlobs module and matching the deviceIds list. Returns a JobId that can be used to monitor the JobStatus.
         /// </summary>
         /// <param name="blobs">List of blobs to be downloaded by the deployBlob module at the target devices.</param>
-        /// <param name="devicesIds">List of target devices based.</param>
+        /// <param name="devicesIds">List of target devices.</param>
         /// <returns></returns>
         public async Task<JobResponse> ScheduleDeployBlobsJobAsync(List<BlobInfo> blobs, IEnumerable<string> devicesIds)
         {
-            if (devicesIds.Any())
-            {
-                string queryCondition = $"deviceId IN [ '{String.Join("', '", devicesIds)}' ]";
-                return await ScheduleDeployBlobsJobAsync(blobs, queryCondition);
-            }
-            else
+            if (devicesIds is null || !devicesIds.Any())
             {
                 return null;
             }
+
+            string queryCondition = $"deviceId IN [ '{String.Join("', '", devicesIds)}' ]";
+            return await ScheduleDeployBlobsJobAsync(blobs, queryCondition);
         }
 
 
@@ -120,13 +115,14 @@ namespace IoTEdgeDeployBlobs.Sdk
                 queryStr += $" and ({queryCondition})";
             }
 
-            _logger.LogInformation($"Gathering Responses with registry query: {queryStr}");
+            _logger.LogInformation($"Querying job reponses: {queryStr}");
             var query = _registryManager.CreateQuery(queryStr);
-            while (query.HasMoreResults) //TODO: Doble check
+            while (query.HasMoreResults)
             {
                 var response = await query.GetNextAsDeviceJobAsync();
                 responses.AddRange(response);
             }
+            _logger.LogInformation($"Found  {responses.Count} reponses");
             return responses;
         }
 
@@ -144,7 +140,7 @@ namespace IoTEdgeDeployBlobs.Sdk
                 queryStr += $" and ( {queryCondition} )";
             }
 
-            _logger.LogInformation($"Gathering Edge DevicesIds with registry query: {queryStr}");
+            _logger.LogInformation($"Gathering Edge DevicesIds: {queryStr}");
             var query = _registryManager.CreateQuery(queryStr);
             while (query.HasMoreResults)
             {
@@ -178,7 +174,7 @@ namespace IoTEdgeDeployBlobs.Sdk
                 DateTime.UtcNow, 
                 (long)TimeSpan.FromMinutes(3).TotalSeconds);
 
-            _logger?.LogInformation($"Scheduled jobId {jobId} to download blobs on devices matching: {queryCondition}. Job Timeout 3 minutes.");
+            _logger?.LogInformation($"Scheduled jobId {jobId} targeting '{queryCondition}'. Job Timeout 3 minutes.");
             return result;
         }
     }

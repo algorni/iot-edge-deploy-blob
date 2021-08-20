@@ -73,7 +73,7 @@ namespace IoTEdgeDeployBlobs.Module
 
             await ioTHubModuleClient.SetMethodHandlerAsync(
                         DownloadBlobsDirectMethod.DownloadBlobMethodName, //the name of the Direct Method 
-                        DownloadBlobsDirectMethod.Execute,  //the Direct Method handler code
+                        DownloadBlobsDirectMethod.DownloadBlobs,  //the Direct Method handler code
                         ioTHubModuleClient);
 
             Console.WriteLine($"\r\nDirect Method {DownloadBlobsDirectMethod.DownloadBlobMethodName} registered.");
