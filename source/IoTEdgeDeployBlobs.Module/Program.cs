@@ -2,7 +2,9 @@ using IoTEdgeDeployBlobs.Sdk;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography.X509Certificates;
@@ -49,9 +51,10 @@ namespace IoTEdgeDeployBlobs.Module
             ModuleClient ioTHubModuleClient = await ModuleClient.CreateFromEnvironmentAsync(settings);
 
             await ioTHubModuleClient.OpenAsync();
+            ioTHubModuleClient.ProductInfo = "DeployBlobs v<TO_BE_DEFINED>";
 
             Console.WriteLine(new String('-', 40));
-            Console.WriteLine("Starting DeployBlobs Module");
+            Console.WriteLine($"Starting Module {ioTHubModuleClient.ProductInfo}");
             Console.WriteLine(new String('-', 40));
             Console.WriteLine("Ensure you have a proper ContainerCreateOptions to map a Host persistent storage path with the DeployBlob target download path,");
             Console.WriteLine("for example to map the host path '/etc/iotedge/deployBlobs' to '/blobsDownloads' container path, specify the HostConfig in ContainerCreateOptions:");
