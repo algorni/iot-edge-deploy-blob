@@ -1,25 +1,25 @@
 # IoT Edge Deploy Blobs
-A scalable way to deploy arbitrary blob(s) to an IoT Edge installation (e.g. configuration files). There are two ways to deploy a certain blob over IoT Edge Devices running the DeployBlobsModule IoT Edge module: using [direct methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) or using a [scheduled job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs).
+A scalable way to deploy arbitrary blob(s) to an IoT Edge installation (e.g. configuration files). There are two ways to deploy a certain blob over IoT Edge Devices running the DeployBlobsModule module: using [direct methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) or using a [scheduled job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs).
 
 Two tipical scenarios where you need to provide certain configuration files are:
 * When using the [Opc Publisher](https://docs.microsoft.com/en-us/azure/industrial-iot/tutorial-publisher-deploy-opc-publisher-standalone) module in standalone mode and using a [Configuration File](https://docs.microsoft.com/en-us/azure/industrial-iot/tutorial-publisher-configure-opc-publisher#configuration-via-configuration-file) to define the published nodes. 
 * When using [Azure Stream Analytics as an IoT Edge module](https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-deploy-stream-analytics?view=iotedge-2020-11) and need [Reference Data](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-use-reference-data#iot-edge-jobs), as only local reference data is supported for Stream Analytics edge jobs.
 
-When using the DeployBlobsModule, you will be able to download blobs content to a local folder within the container running the module. You can take advantage of [device's local storage](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11) to provide a persistent storage to be shared with other modules so you can use the downloaded blobs in other modules as per your convenience. 
+By using the DeployBlobsModule, you will be able to download blobs content to a local folder within the container running the module. You can take advantage of [device's local storage](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11) to provide a persistent storage to be shared with other modules so you can use the downloaded blobs in other modules as per your convenience. 
 
 ## Deploying blobs by using a Direct Method Call
-This option uses a [Direct Method](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) call to the DownloadBlob method provided by the DeployBlobsModule module. The input of the Direct Method call is a list of blobs hosted within a Azure Storage Account container. For security reasons, for each blob, a temporal SAS URL is provided to be able to download the content.  
+This option uses a [Direct Method](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) call to the DownloadBlob method provided by the DeployBlobsModule module. The input of the Direct Method call is a list of blobs hosted within an Azure Storage Account container. For security reasons, for each blob, a temporal SAS URL is provided to be able to download the content.  
 
 Using this option, you can reach a certain device by using the DeviceID and directly execute the Direct Method invocation. 
 
 ![Download Blobs by calling the Direct Method](https://user-images.githubusercontent.com/2638875/130454984-c61a49f3-7fa0-43a4-8978-b2bfb6bc3de3.jpg)
 
 ## Deploying blobs by using an IoT Hub Schedule Job
-To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk, and target all the devices running the DeployBlobsModule IoT Edge module or to a certain subset of those by using tags filtering or a list of Device ids.
+To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk, and target all the devices running the DeployBlobsModule IoT Edge module or targeting just a certain subset of those using tags filtering or a list of device ids.
 
 ![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/2638875/130455948-4350a6d6-b0b9-4bca-ad09-9dbebe84d33b.jpg)
 
-> By now, the scheduled job is invoked inmeditatly but it is quite easy to provide a way to schedule the job to be executed at a certaine time / date by changing or adding some lines of code.
+> By now, the scheduled job is invoked inmeditatly but it is quite easy to provide a way to schedule the job to be executed at a certaine time and date by changing or adding some lines of code.
 
 ## IoT Edge Module
 
@@ -29,7 +29,7 @@ Since it reference another class library under the solution, remember to build t
 
     docker build -f "./IotEdgeDeployBlobs.Module/Dockerfile.amd64.debug" -t <your container register>.azurecr.io/blobproxymodule:<your tag> .
 
-The module provides register Direct Method to execute the DownloadBlob method which accepts a ´ List<BlobInfo>´ as the list of blobs to be downloaded. The ´BlobInfo´ class is defined as follows:
+The module provides register Direct Method to execute the DownloadBlob method which accepts a `List<BlobInfo>` as the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
 
 ```c#
     public class BlobInfo
@@ -49,7 +49,7 @@ The module provides register Direct Method to execute the DownloadBlob method wh
     }
 ``` 
 
-So, you provide the Blob SAS Url, the DownloadPath (relative to the container running the module) and the blob name. You can use whatever the path you want, but you need to ensure the path exists and running process have enought permissions to write to it. In case the the blob has been already downloaded, it will be replaced.
+So, you provide the Blob SAS Url, the DownloadPath (relative to the container running the module) and the blob name. You can use whatever the path you want, but you need to ensure the path exists and running process have enought permissions to write to it. If resulting target path already exist, it will be replaced.
 
 To be able to share the downloaded blobs with other modules, you will need to use the [device's local storage](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11)
 
@@ -68,7 +68,7 @@ For example, if you use `/app/blobs` as the `DownloadPath` you can map a host fo
 
 With this configuration, the host path `/etc/iotedge/deployBlobs` will be mounted as `/app/blobs` for the DeployBlobsModule.
 
-We upload the `publishednodes.json` file to the `blobconfig` container in the storage acoount. Then, we create a `BlobInfo` object as follows to create request:
+Consider we have uploaded a `publishednodes.json` file to the `blobconfig` container in the storage account. We will need to create a `BlobInfo` object as follows (to be included in the request):
 ```c#
     BlobInfo blobInfo = new()
     {
@@ -78,7 +78,7 @@ We upload the `publishednodes.json` file to the `blobconfig` container in the st
     };
 ```
 
-The content of `publishednodes.json` will be downloaded to the module floder `/app/blobs/opcPublisher`, so at the host, the file `/etc/iotedge/deployBlobs/opcPublisher/publishednodes.json` will be created.
+Once the `DownloadBlobs` direct method is executed (directly or using a scheduled job), the content of `publishednodes.json` located in the storage account will be downloaded to the module folder `/app/blobs/opcPublisher`, so at the host, the file `/etc/iotedge/deployBlobs/opcPublisher/publishednodes.json` will be created.
 
 To allow other modules to use the downloaded blobs, you can map the download host path to other modules. For example, imagine that we have an Opc Publisher module created with the following Container Create Options:
 
