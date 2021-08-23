@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 WORKDIR /app
 COPY --from=build-env /app/out ./
 
+#create a blob folder where the blob will be stored!
+RUN mkdir blobs
+
 RUN useradd -ms /bin/bash moduleuser
 USER moduleuser
 
