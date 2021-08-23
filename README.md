@@ -24,11 +24,6 @@ To be able to scale out, and deploy the same set of blob files to multiple IoT E
 ## IoT Edge Module
 
 ### How the module works
-Under /source/IotEdgeDeployBlobs.Module you can find an IoT Edge module.
-Since it reference another class library under the solution, remember to build the docker from the source root folder with a command like:
-
-    docker build -f "./IotEdgeDeployBlobs.Module/Dockerfile.amd64.debug" -t <your container register>.azurecr.io/blobproxymodule:<your tag> .
-
 The module creates a direct method handler to execute the DownloadBlobs method which accepts a `List<BlobInfo>` as the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
 
 ```c#
@@ -109,6 +104,12 @@ To allow other modules to use the downloaded blobs, you can map the download hos
 With this, the Opc Publisher module will react to the updates of the `publishednodes.json` file done usign the DeployBlobsModule.
 
 Be sure you [configure the host folder with the right permission](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11#link-module-storage-to-device-storage), otherwise the module will not be able to write the blob.
+
+## Building the module
+Under /source/IotEdgeDeployBlobs.Module you can find an IoT Edge module.
+Since it reference another class library under the solution, remember to build the docker from the source root folder with a command like:
+
+    docker build -f "./IotEdgeDeployBlobs.Module/Dockerfile.amd64.debug" -t <your container register>.azurecr.io/blobproxymodule:<your tag> .
 
 ## IoTEdgeDeployBlobs.Sdk library
 The IoTEdgeDeployBlobs.Sdk provide several methods to ease the blob storage file handling (upload, download, SAS url generation),as well as the Direct Method invocation, schedule job creation and responses retrival of the invocations.
