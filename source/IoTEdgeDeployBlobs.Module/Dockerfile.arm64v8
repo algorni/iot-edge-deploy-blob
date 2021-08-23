@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+WORKDIR /app
+
+COPY . ./
+RUN dotnet publish IoTEdgeDeployBlobs.Module -c Release -o out -r linux-arm64 --self-contained false
+
+FROM mcr.microsoft.com/dotnet/runtime:5.0-buster-slim-arm64v8
+WORKDIR /app
+COPY --from=build-env /app/out ./
+
+#create a blob folder where the blob will be stored!
+RUN mkdir blobs
+
+RUN useradd -ms /bin/bash moduleuser
+USER moduleuser
+
+
+ENTRYPOINT ["dotnet", "IoTEdgeDeployBlobs.Module.dll"]

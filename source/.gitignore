@@ -2,3 +2,5 @@
 .env
 **/config/
 *.user
+
+**/app[sS]ettings.local.json
