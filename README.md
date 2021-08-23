@@ -15,12 +15,12 @@ This option uses a [Direct Method](https://docs.microsoft.com/en-us/azure/iot-hu
 
 Using this option, you can reach a certain device by using the DeviceID and directly execute the Direct Method invocation. 
 
-![Download Blobs by calling the Direct Method](https://user-images.githubusercontent.com/45007019/128996747-96128c1e-fc6b-4ac6-b2e4-dad116e812f6.png)
+![Download Blobs by calling the Direct Method](https://user-images.githubusercontent.com/2638875/130454984-c61a49f3-7fa0-43a4-8978-b2bfb6bc3de3.jpg)
 
 ## Deploying blobs by using an IoT Hub Schedule Job
 To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk, and target all the devices running the DeployBlobsModule IoT Edge module or to a certain subset of those by using tags filtering or a list of Device ids.
 
-![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/45007019/128996747-96128c1e-fc6b-4ac6-b2e4-dad116e812f6.png)
+![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/2638875/130454062-da6d6bda-4398-4c69-aa15-c6b74ff79fdb.jpg)
 
 > By now, the scheduled job is invoked inmeditatly but it is quite easy to provide a way to schedule the job to be executed at a certaine time / date by changing or adding some lines of code.
 
