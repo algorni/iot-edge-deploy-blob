@@ -10,7 +10,7 @@ When using the DeployBlobsModule, you will be able to download blobs content to 
 TODO: This solution can be extended to provide other ways to share the downloaded blobs with other modules.  
 > TODO: Provide a property to invoke a "call back method" thru Direct Methods (this callback method can be a custom one or an standard one -restar- for example)
 
-## Debloying blobs by using a Direct Method Call
+## Deploying blobs by using a Direct Method Call
 This option uses a [Direct Method](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) call to the DownloadBlob method provided by the DeployBlobsModule module. The input of the Direct Method call is a list of blobs hosted within a Azure Storage Account container. For security reasons, for each blob, a temporal SAS URL is provided to be able to download the content.  
 
 Using this option, you can reach a certain device by using the DeviceID and directly execute the Direct Method invocation. 
@@ -20,7 +20,7 @@ Using this option, you can reach a certain device by using the DeviceID and dire
 ## Deploying blobs by using an IoT Hub Schedule Job
 To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk, and target all the devices running the DeployBlobsModule IoT Edge module or to a certain subset of those by using tags filtering or a list of Device ids.
 
-![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/2638875/130454062-da6d6bda-4398-4c69-aa15-c6b74ff79fdb.jpg)
+![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/2638875/130455948-4350a6d6-b0b9-4bca-ad09-9dbebe84d33b.jpg)
 
 > By now, the scheduled job is invoked inmeditatly but it is quite easy to provide a way to schedule the job to be executed at a certaine time / date by changing or adding some lines of code.
 
