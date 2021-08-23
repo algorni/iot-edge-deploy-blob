@@ -24,7 +24,7 @@ To be able to scale out, and deploy the same set of blob files to multiple IoT E
 ## IoT Edge Module
 
 ### How the module works
-The module creates a direct method handler to execute the DownloadBlobs method which accepts a `List<BlobInfo>` as the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
+The module sets a direct method handler to allow the DownloadBlobs method to be executed, which expect a `List<BlobInfo>` as a payload, representing the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
 
 ```c#
     public class BlobInfo
@@ -44,11 +44,9 @@ The module creates a direct method handler to execute the DownloadBlobs method w
     }
 ``` 
 
-So, you provide the Blob SAS Url, the DownloadPath (relative to the container running the module) and the blob name. You can use whatever the path you want, but you need to ensure the path exists and running process have enought permissions to write to it. If resulting target path already exist, it will be replaced.
+> You provide the Blob SAS Url, the DownloadPath (relative to the container running the module) and the blob name. You can use whatever the path you want, but you need to ensure the path exists and running process have enought permissions to write to it. If resulting target path already exist, it will be replaced.
 
-To be able to share the downloaded blobs with other modules, you will need to use the [device's local storage](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11)
-
-For example, if you use `/app/blobs` as the `DownloadPath` you can map a host folder or volume using the `HostConfig/Binds` [Container Create Options](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-use-create-options?view=iotedge-2020-11).
+To be able to share the downloaded blobs with other modules, you will need to use the [device's local storage](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-access-host-storage-from-module?view=iotedge-2020-11). For example, if you use `/app/blobs` as the `DownloadPath` you can map a host folder using the `HostConfig/Binds` [Container Create Options](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-use-create-options?view=iotedge-2020-11).
 
 ```json
 //Host Config for DeployBlobsModule module
