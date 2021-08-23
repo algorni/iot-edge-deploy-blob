@@ -57,13 +57,13 @@ namespace IoTEdgeDeployBlobs.Module
             Console.WriteLine($"Starting Module {ioTHubModuleClient.ProductInfo}");
             Console.WriteLine(new String('-', 40));
             Console.WriteLine("Ensure you have a proper ContainerCreateOptions to map a Host persistent storage path with the DeployBlob target download path,");
-            Console.WriteLine("for example to map the host path '/etc/iotedge/deployBlobs' to '/blobsDownloads' container path, specify the HostConfig in ContainerCreateOptions:");
-            Console.WriteLine("{\r\n    \"HostConfig\": {\r\n        \"Binds\": [\r\n            \"/etc/iotedge/deployBlobs:/blobsDownloads\"\r\n        ]\r\n    }\r\n}");
+            Console.WriteLine("for example to map the host path '/etc/iotedge/deployBlobs' to '/app/blobs' container path, specify the HostConfig in ContainerCreateOptions:");
+            Console.WriteLine("{\r\n    \"HostConfig\": {\r\n        \"Binds\": [\r\n            \"/etc/iotedge/deployBlobs:/app/blobs\"\r\n        ]\r\n    }\r\n}");
             Console.WriteLine("\r\nEnsure too Host path is created with the correct permissions to allow iotedge to access it:");
             Console.WriteLine("\tsudo mkdir /etc/iotedge/deployBlobs");
             Console.WriteLine("\tsudo chown 1000 /etc/iotedge/deployBlobs");
             Console.WriteLine("\tsudo chmod 700 /etc/iotedge/deployBlobs");
-            Console.WriteLine("\r\nThen, in the Direct Method request, ensure the BlobRemotePath is set using the '/blobsDownloads' path, for example '/blobsDownloads/myModule'");
+            Console.WriteLine("\r\nThen, in the Direct Method request, ensure the BlobRemotePath is set using the '/app/blobs' path, for example '/app/blobs/myModule'");
             Console.WriteLine("\r\nFinally, to allow an existing module 'myModule' to access the downloaded files, ensure that you setup another HostConfig binding mapping the Host path. In this example:");
             Console.WriteLine("{\r\n    \"HostConfig\": {\r\n        \"Binds\": [\r\n            \"/etc/iotedge/deployBlobs/myModule:/myBlobs\"\r\n        ]\r\n    }\r\n}");
             Console.WriteLine("\r\nWith this, 'myModule' will be able to access the downloaded blobs by accessing to the local container path '/myBlobs' ");

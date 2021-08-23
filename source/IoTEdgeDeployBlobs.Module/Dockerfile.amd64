@@ -11,7 +11,11 @@ COPY --from=build-env /app/out ./
 #create a blob folder where the blob will be stored!
 RUN mkdir blobs
 
-RUN useradd -ms /bin/bash moduleuser
-USER moduleuser
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends unzip procps && \
+#     rm -rf /var/lib/apt/lists/*
+
+# RUN useradd -ms /bin/bash moduleuser
+# USER moduleuser
 
 ENTRYPOINT ["dotnet", "IoTEdgeDeployBlobs.Module.dll"]
