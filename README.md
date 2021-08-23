@@ -29,7 +29,7 @@ Since it reference another class library under the solution, remember to build t
 
     docker build -f "./IotEdgeDeployBlobs.Module/Dockerfile.amd64.debug" -t <your container register>.azurecr.io/blobproxymodule:<your tag> .
 
-The module provides register Direct Method to execute the DownloadBlob method which accepts a `List<BlobInfo>` as the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
+The module creates a direct method handler to execute the DownloadBlobs method which accepts a `List<BlobInfo>` as the list of blobs to be downloaded. The `BlobInfo` class is defined as follows:
 
 ```c#
     public class BlobInfo
@@ -68,15 +68,17 @@ For example, if you use `/app/blobs` as the `DownloadPath` you can map a host fo
 
 With this configuration, the host path `/etc/iotedge/deployBlobs` will be mounted as `/app/blobs` for the DeployBlobsModule.
 
-Consider we have uploaded a `publishednodes.json` file to the `blobconfig` container in the storage account. We will need to create a `BlobInfo` object as follows (to be included in the request):
+A back-end application (console, web app, function app) can upload a `publishednodes.json` file to the `blobconfig` container in the storage account. We will need to create a `BlobInfo` object as follows (to be included in the request):
 ```c#
     BlobInfo blobInfo = new()
     {
         Name = myFile.json,
-        SasUrl = "https://<storageAccount>.blob.core.windows.net/blobconfig/myFile.json?sv=2020-04-08&st=2021-08-23T14%3A07%3A24Z&se=2021-08-23T14%3A17%3A00Z&sr=b&sp=r&sig=0B0Cv8k1rc9%2FcknoYUXKeF%2Fstd39tgN7LLDyPBArTNA%3D",
+        SasUrl = "https://<storageAccount>.blob.core.windows.net/blobconfig/publishednodes.json?sv=2020-04-08&st=2021-08-23T14%3A07%3A24Z&se=2021-08-23T14%3A17%3A00Z&sr=b&sp=r&sig=0B0Cv8k1rc9%2FcknoYUXKeF%2Fstd39tgN7LLDyPBArTNA%3D",
         DownloadPath = "/app/blobs/opcPublisher"
     };
 ```
+
+Then, that back-end application invokes the direct method directly, by using the `DeployBlobsAsync()` method or by creating an scheduled job using the `ScheduleDeployBlobsJobAsync()` (both provided by the IoTEdgeDeployBlobs.Sdk library).
 
 Once the `DownloadBlobs` direct method is executed (directly or using a scheduled job), the content of `publishednodes.json` located in the storage account will be downloaded to the module folder `/app/blobs/opcPublisher`, so at the host, the file `/etc/iotedge/deployBlobs/opcPublisher/publishednodes.json` will be created.
 
