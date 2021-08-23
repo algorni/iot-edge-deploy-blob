@@ -61,8 +61,8 @@ namespace IoTEdgeDeployBlobs.Cli
             _deployBlobs = new(_ioTHubConnectionString, _deployBlobsModuleName, loggerDeployBlobs);
 
             //Setup some sample blobs to to be distributed among IoT Edge Devices
-            BlobInfo opcPublisherBlobInfo = await PrepareSampleBlobForDeployAsync("./SampleFiles/pn.json", "/blobsDownloads/opcPublisher");
-            BlobInfo otherBlobInfo = await PrepareSampleBlobForDeployAsync("./SampleFiles/otherContent.txt", "/blobsDownloads");
+            BlobInfo opcPublisherBlobInfo = await PrepareSampleBlobForDeployAsync("./SampleFiles/pn.json", "/app/blobs/opcPublisher");
+            BlobInfo otherBlobInfo = await PrepareSampleBlobForDeployAsync("./SampleFiles/otherContent.txt", "/app/blobs");
             List <BlobInfo> blobs = new() { opcPublisherBlobInfo, otherBlobInfo };
 
             //Deploy to a single device thru DirectMethod
