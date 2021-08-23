@@ -1,5 +1,5 @@
 # IoT Edge Deploy Blobs
-A scalable way to deploy arbitrary blob(s) to an IoT Edge installation (e.g. configuration files). There are two ways to deploy a certain blob over IoT Edge Devices running the DeployBlobsModule module: using [direct methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) or using a [scheduled job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs).
+A scalable way to deploy arbitrary blob(s) to an IoT Edge installation (e.g., configuration files). There are two ways to deploy a certain blob over IoT Edge Devices running the DeployBlobsModule module: using [direct methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) or using a [scheduled job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs).
 
 Two tipical scenarios where you need to provide certain configuration files are:
 * When using the [Opc Publisher](https://docs.microsoft.com/en-us/azure/industrial-iot/tutorial-publisher-deploy-opc-publisher-standalone) module in standalone mode and using a [Configuration File](https://docs.microsoft.com/en-us/azure/industrial-iot/tutorial-publisher-configure-opc-publisher#configuration-via-configuration-file) to define the published nodes. 
@@ -15,16 +15,16 @@ Using this option, you can reach a certain device by using the DeviceID and dire
 ![Download Blobs by calling the Direct Method](https://user-images.githubusercontent.com/2638875/130454984-c61a49f3-7fa0-43a4-8978-b2bfb6bc3de3.jpg)
 
 ## Deploying blobs by using an IoT Hub Schedule Job
-To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk, and target all the devices running the DeployBlobsModule IoT Edge module or targeting just a certain subset of those using tags filtering or a list of device ids.
+To be able to scale out, and deploy the same set of blob files to multiple IoT Edge Devices, you can [schedule a job](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-jobs) on IoT Hub, the job will invoke the direct method for each device to download the blobs content. Using this option you can deploy blobs files in bulk and target all the devices running the DeployBlobsModule IoT Edge module or targeting just a certain subset of those using tags filtering or a list of device ids.
 
 ![Download Blobs by scheduling an IoT Hub Job](https://user-images.githubusercontent.com/2638875/130455948-4350a6d6-b0b9-4bca-ad09-9dbebe84d33b.jpg)
 
-> By now, the scheduled job is invoked inmeditatly but it is quite easy to provide a way to schedule the job to be executed at a certaine time and date by changing or adding some lines of code.
+> By now, the scheduled job is invoked inmeditatly, but it is quite easy to provide a way to schedule the job to be executed at a certaine time and date by changing or adding some lines of code.
 
 ## IoT Edge Module
 ### Building the module
 Under /source/IotEdgeDeployBlobs.Module you can find an IoT Edge module.
-Since it reference another class library under the solution, remember to build the docker from the source root folder with a command like:
+Since it references another class library under the solution, remember to build the docker from the source root folder with a command like:
 
     docker build -f "./IotEdgeDeployBlobs.Module/Dockerfile.amd64.debug" -t <your container register>.azurecr.io/blobproxymodule:<your tag> .
 ### How the module works
