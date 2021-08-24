@@ -14,7 +14,7 @@ env:
   LOG_ANALYTICS_SHARED_KEY: ${{ secrets.LOG_ANALYTICS_SHARED_KEY }}
   DEPLOY_BLOBS_MODULE_NAME: "DeployBlobsModule"
   MODULE_CONTAINER_IMAGE_NAME: "deployblobs"
-  ROOT_VERSION: "1.0.0"
+  ROOT_VERSION: "1.0"
 
 jobs:
   build:  
@@ -53,11 +53,11 @@ jobs:
         build-args: |
           VERSION=${{ env.VERSION }}
           FILE_VERSION=${{ env.FILE_VERSION }}
-          ASSEMBLY_VERSION=${{ env.ASSEMBLY_FILE_VERSION }}
+          ASSEMBLY_VERSION=${{ env.ASSEMBLY_VERSION }}
       env:
         VERSION: "${{ env.ROOT_VERSION }}.${{ github.run_number }}-${{ matrix.arch }}" #SIMPLE VERSIONING
-        FILE_VERSION: "1.0.0.${{ github.run_number }}"
-        ASSEMBLY_VERSION: "1.0.0.${{ github.run_number }}"
+        FILE_VERSION: "1.0.${{ github.run_number }}.0"
+        ASSEMBLY_VERSION: "1.0.${{ github.run_number }}.0"
 
   deploy:
     needs: [build]
