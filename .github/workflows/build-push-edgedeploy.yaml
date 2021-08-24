@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: ["amd64", "amd64.debug", "arm32v7", "arm32v7.debug", "arm64v8", "arm64v8.debug"]
+        arch: ["amd64", "amd64.debug" ] ## NO CROSS COMPILATION FOR A SIMPLIFIED BUILD PROCESS... 
 
     steps:
     - name: Checkout Source Code
