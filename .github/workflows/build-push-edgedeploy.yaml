@@ -1,4 +1,4 @@
-name: Build image, push & execute IoT Edge deployment
+name: Build Image and Deploy IoT Edge
 
 on:
   workflow_dispatch:
@@ -74,7 +74,7 @@ jobs:
     - name: Replace Deployment Variables
       uses: microsoft/variable-substitution@v1
       with:
-        files: ./edge-deployment/deviceType-edge-deployment.json
+        files: ./edge-deployment/monitor-deployblobs-template.json
       env:
         modulesContent.$edgeAgent.properties.desired.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
         modulesContent.$edgeAgent.properties.desired.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
@@ -84,4 +84,4 @@ jobs:
         
     - name: IoT Edge Deployment
       run: |
-        az iot edge deployment create --hub-name ${{ env.IOT_HUB_NAME }} --d "iot-edge-deployblobs-${{ env.VERSION }}" --content ./edge-deployment/deviceType-edge-deployment.json --target-condition "tags.deviceType='Edge'"
+        az iot edge deployment create --hub-name ${{ env.IOT_HUB_NAME }} --d "iot-edge-deployblobs-${{ env.VERSION }}" --content ./edge-deployment/monitor-deployblobs-template.json --target-condition "tags.deviceType='Edge'"
