@@ -1,3 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
+WORKDIR /app
+
+ARG VERSION=0.0.0-amd64
+ARG FILE_VERSION=0.0.0.0
+ARG ASSEMBLY_VERSION=0.0.0
+
+RUN echo $VERSION
+RUN echo $FILE_VERSION 
+RUN echo $ASSEMBLY_VERSION
+
+COPY . ./
+RUN dotnet publish IoTEdgeDeployBlobs.Module -c Debug -o out /p:Version=$VERSION /p:FileVersion=$FILE_VERSION /p:AssemblyVersion=$ASSEMBLY_VERSION
+
 FROM mcr.microsoft.com/dotnet/runtime:5.0-buster-slim AS base
 
 RUN apt-get update && \
@@ -7,12 +21,6 @@ RUN apt-get update && \
 RUN useradd -ms /bin/bash moduleuser
 USER moduleuser
 RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg
-
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
-WORKDIR /app
-
-COPY . ./
-RUN dotnet publish IoTEdgeDeployBlobs.Module -c Debug -o out 
 
 FROM base
 WORKDIR /app

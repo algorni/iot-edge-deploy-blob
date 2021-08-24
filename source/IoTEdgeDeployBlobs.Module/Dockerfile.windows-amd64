@@ -1,8 +1,16 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:5.0-nanoserver-ltsc2022 AS build-env
 WORKDIR /app
 
+ARG VERSION=0.0.0-amd64
+ARG FILE_VERSION=0.0.0.0
+ARG ASSEMBLY_VERSION=0.0.0
+
+RUN echo $VERSION
+RUN echo $FILE_VERSION 
+RUN echo $ASSEMBLY_VERSION
+
 COPY . ./
-RUN dotnet publish IoTEdgeDeployBlobs.Module -c Release -o out
+RUN dotnet publish IoTEdgeDeployBlobs.Module -c Release -o out /p:Version=$VERSION /p:FileVersion=$FILE_VERSION /p:AssemblyVersion=$ASSEMBLY_VERSION
 
 FROM mcr.microsoft.com/dotnet/core/runtime:5.0-nanoserver-ltsc2022
 WORKDIR /app
