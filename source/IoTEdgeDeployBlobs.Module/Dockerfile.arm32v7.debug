@@ -14,9 +14,9 @@ RUN dotnet publish IoTEdgeDeployBlobs.Module -c Debug -o out -r linux-arm --self
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-buster-slim-arm32v7 AS base
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends unzip procps && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends unzip procps
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN useradd -ms /bin/bash moduleuser
 USER moduleuser
