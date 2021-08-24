@@ -76,12 +76,12 @@ jobs:
         files: ./edge-deployment/deviceType-edge-deployment.json
       env:
         id: "iot-edge-deployblobs-${{ env.VERSION }}"
-        content.modulesContent.$edgeAgent.'properties.desired'.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
-        content.modulesContent.$edgeAgent.'properties.desired'.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
-        content.modulesContent.$edgeAgent.'properties.desired'.untime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
+        content.modulesContent.$edgeAgent.properties.desired.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
+        content.modulesContent.$edgeAgent.properties.desired.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
+        content.modulesContent.$edgeAgent.runtime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
         content.modulesContent.$edgeAgent.runtime.settings.registryCredentials.acrtodosample.password: ${{ env.ACR_PASSWORD }}
-        content.modulesContent.$edgeAgent.'properties.desired'.runtime.settings.registryCredentials.acrtodosample.username: ${{ env.ACR_USERNAME }}
-        content.modulesContent.$edgeAgent.'properties.desired'.runtime.settings.registryCredentials : '{ "${{ env.ACR_NAME }}": { "address": "${{ env.ACR_LOGIN_SERVER }}", "password": "${{ env.ACR_PASSWORD }}", "username": "${{ env.ACR_USERNAME }}" } }'        
+        content.modulesContent.$edgeAgent.runtime.settings.registryCredentials.acrtodosample.username: ${{ env.ACR_USERNAME }}
+        content.modulesContent.$edgeAgent.runtime.settings.registryCredentials : '{ "${{ env.ACR_NAME }}": { "address": "${{ env.ACR_LOGIN_SERVER }}", "password": "${{ env.ACR_PASSWORD }}", "username": "${{ env.ACR_USERNAME }}" } }'        
         
     - name: IoT Edge Deployment
       run: |
