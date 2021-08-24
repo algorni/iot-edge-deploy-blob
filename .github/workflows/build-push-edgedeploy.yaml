@@ -81,7 +81,7 @@ jobs:
         content.modulesContent.$edgeAgent.'properties.desired'.untime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
         content.modulesContent.$edgeAgent.runtime.settings.registryCredentials.acrtodosample.password: ${{ env.ACR_PASSWORD }}
         content.modulesContent.$edgeAgent.'properties.desired'.runtime.settings.registryCredentials.acrtodosample.username: ${{ env.ACR_USERNAME }}
-        content.modulesContent.$edgeAgent.'properties.desired'.runtime.settings.registryCredentials : '"${{ env.ACR_NAME }}": { "address": "${{ env.ACR_LOGIN_SERVER }}", "password": "${{ env.ACR_PASSWORD }}", "username": "${{ env.ACR_USERNAME }}" }'        
+        content.modulesContent.$edgeAgent.'properties.desired'.runtime.settings.registryCredentials : '{ "${{ env.ACR_NAME }}": { "address": "${{ env.ACR_LOGIN_SERVER }}", "password": "${{ env.ACR_PASSWORD }}", "username": "${{ env.ACR_USERNAME }}" } }'        
         
     - name: IoT Edge Deployment
       run: |
