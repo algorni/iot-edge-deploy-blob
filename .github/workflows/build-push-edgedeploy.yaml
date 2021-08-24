@@ -14,14 +14,16 @@ env:
   LOG_ANALYTICS_SHARED_KEY: ${{ secrets.LOG_ANALYTICS_SHARED_KEY }}
   DEPLOY_BLOBS_MODULE_NAME: "DeployBlobsModule"
   MODULE_CONTAINER_IMAGE_NAME: "deployblobs"
-  ROOT_VERSION: "1.0"
+  VERSION: "1.0.${{ github.run_number }}" #SIMPLE VERSIONING
+  FILE_VERSION: "1.0.${{ github.run_number }}.0"
+  ASSEMBLY_VERSION: "1.0.${{ github.run_number }}.0"
 
 jobs:
   build:  
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: ["amd64", "amd64-debug"]
+        arch: ["amd64", "amd64.debug", "arm32v7", "arm32v7.debug", "arm64v8", "arm64v8.debug"]
 
     steps:
     - name: Checkout Source Code
@@ -48,16 +50,12 @@ jobs:
       with:
         context: ./source
         push: true
-        tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}
-        file: ./source/IoTEdgeDeployBlobs.Module/Dockerfile.amd64
+        tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-${{ matrix.arch }}
+        file: ./source/IoTEdgeDeployBlobs.Module/Dockerfile.${{ matrix.arch }}
         build-args: |
           VERSION=${{ env.VERSION }}
           FILE_VERSION=${{ env.FILE_VERSION }}
           ASSEMBLY_VERSION=${{ env.ASSEMBLY_VERSION }}
-      env:
-        VERSION: "${{ env.ROOT_VERSION }}.${{ github.run_number }}-${{ matrix.arch }}" #SIMPLE VERSIONING
-        FILE_VERSION: "1.0.${{ github.run_number }}.0"
-        ASSEMBLY_VERSION: "1.0.${{ github.run_number }}.0"
 
   deploy:
     needs: [build]
