@@ -76,11 +76,11 @@ jobs:
       with:
         files: ./edge-deployment/deviceType-edge-deployment.json
       env:
-        content.modulesContent.$edgeAgent.properties.desired.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
-        content.modulesContent.$edgeAgent.properties.desired.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
-        content.modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
-        content.modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.password: ${{ env.ACR_PASSWORD }}
-        content.modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.username: ${{ env.ACR_USERNAME }}
+        modulesContent.$edgeAgent.properties.desired.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
+        modulesContent.$edgeAgent.properties.desired.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
+        modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
+        modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.password: ${{ env.ACR_PASSWORD }}
+        modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.username: ${{ env.ACR_USERNAME }}
         
     - name: IoT Edge Deployment
       run: |
