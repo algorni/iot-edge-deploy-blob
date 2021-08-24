@@ -11,6 +11,7 @@ env:
   ACR_LOGIN_SERVER: acrtodosample.azurecr.io # fqdn for the Azure Container Registry
   ACR_USERNAME: ${{ secrets.ACR_USERNAME }} # user name for accessing Azure Container Registry
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }} # password for accesing the Azure Container Registry
+  IOT_HUB_NAME: "iot-playground-devices-hub"
   LOG_ANALYTICS_SHARED_KEY: ${{ secrets.LOG_ANALYTICS_SHARED_KEY }}
   DEPLOY_BLOBS_MODULE_NAME: "DeployBlobsModule"
   MODULE_CONTAINER_IMAGE_NAME: "deployblobs"
@@ -75,7 +76,6 @@ jobs:
       with:
         files: ./edge-deployment/deviceType-edge-deployment.json
       env:
-        id: "iot-edge-deployblobs-${{ env.VERSION }}"
         content.modulesContent.$edgeAgent.properties.desired.modules.azureMonitor.env.LogAnalyticsSharedKey.value: ${{ env.LOG_ANALYTICS_SHARED_KEY }}
         content.modulesContent.$edgeAgent.properties.desired.modules.DeployBlobsModule.settings.image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.MODULE_CONTAINER_IMAGE_NAME }}:${{ env.VERSION }}-amd64
         content.modulesContent.$edgeAgent.properties.desired.runtime.settings.registryCredentials.acrtodosample.address: ${{ env.ACR_LOGIN_SERVER }}
@@ -84,4 +84,4 @@ jobs:
         
     - name: IoT Edge Deployment
       run: |
-        cat ./edge-deployment/deviceType-edge-deployment.json
+        az iot edge deployment create --hub-name ${{ env.IOT_HUB_NAME }} --d "iot-edge-deployblobs-${{ env.VERSION }}" --content ./edge-deployment/deviceType-edge-deployment.json --target-condition "tags.deviceType='Edge'"
