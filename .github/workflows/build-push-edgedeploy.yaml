@@ -1,4 +1,4 @@
-name: Build image, push & deploy
+name: Build image, push & execute IoT Edge deployment
 
 on:
   workflow_dispatch:
@@ -15,12 +15,15 @@ env:
   DEPLOY_BLOBS_MODULE_NAME: "DeployBlobsModule"
   MODULE_CONTAINER_IMAGE_NAME: "deployblobs"
   ROOT_VERSION: "1.0.0"
-  VERSION: "${{ env.ROOT_VERSION }}.${{ env.GITHUB_RUN_NUMBER }}" #SIMPLE VERSIONING
-  FILE_VERSION: "${{ env.VERSION }}"
-  ASSEMBLY_VERSION: "${{ env.VERSION }}"
 
 jobs:
-  build:
+  build:  
+    env:
+      VERSION: "${{ env.ROOT_VERSION }}.${{ env.GITHUB_RUN_NUMBER }}" #SIMPLE VERSIONING
+      FILE_VERSION: "${{ env.VERSION }}"
+      ASSEMBLY_VERSION: "${{ env.VERSION }}"
+    
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -75,5 +78,3 @@ jobs:
     - name: IoT Edge Deployment
       run: |
         echo az command
-
-# For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
