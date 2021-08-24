@@ -81,4 +81,6 @@ jobs:
     - name: IoT Edge Deployment
       run: |
         az extension add --name azure-iot
-        az iot edge deployment create --hub-name ${{ env.IOT_HUB_NAME }} --deployment-id "iot-edge-deployblobs-${{ env.VERSION }}" --content ./edge-deployment/monitor-deployblobs-template.json --target-condition "tags.deviceType='Edge'"
+        
+        DEPLOYMENT_ID_VERSION=$(echo "iot-edge-deployblobs-v${{ env.VERSION }}" sed -r 's/\./-/g')
+        az iot edge deployment create --hub-name ${{ env.IOT_HUB_NAME }} --deployment-id $DEPLOYMENT_ID_VERSION --content ./edge-deployment/monitor-deployblobs-template.json --target-condition "tags.deviceType='Edge'"
