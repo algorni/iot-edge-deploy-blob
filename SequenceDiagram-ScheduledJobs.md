@@ -27,14 +27,14 @@ title Deploy a Blob to IoT Edge (Scheduled Jobs)
 
     DeployBlobsModule-->Iot Hub:DM Confirm blob saved on file system.
 
-    IotEdgeDeployBlobs.Sdk->Iot Hub:GetJobStatus(JobId)
-    Iot Hub->IotEdgeDeployBlobs.Sdk:Job Finished
-
-	IotEdgeDeployBlobs.Sdk ->Iot Hub: GetJobResponses(JobId)
-    Iot Hub->IotEdgeDeployBlobs.Sdk: Job Responses
-
     note over Consumer Docker,File System (bind):You need to notify the target module to reload the Blob(s)\nOr ensure Module watches for file updates
 
     IotEdgeDeployBlobs.Sdk-->Consumer Docker:Notify to Reload the Blob(s)
 
     Consumer Docker->File System (bind):Load the Blob(s)
+
+    IotEdgeDeployBlobs.Sdk->Iot Hub:GetJobStatus(JobId)
+    Iot Hub->IotEdgeDeployBlobs.Sdk:Job Finished
+
+	IotEdgeDeployBlobs.Sdk ->Iot Hub: GetJobResponses(JobId)
+    Iot Hub->IotEdgeDeployBlobs.Sdk: Job Responses

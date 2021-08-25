@@ -90,7 +90,7 @@ namespace IoTEdgeDeployBlobs.Module
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
             var informationVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-            return $"IoTEdgeDeployBlobs.Module {fvi.ProductVersion} - FileVersion: {fvi.FileVersion}. InformationalVersion: {informationVersion}";
+            return $"IoTEdgeDeployBlobs.Module v{fvi.ProductVersion} - FileVersion: v{fvi.FileVersion}.";
         }
     }
 }
