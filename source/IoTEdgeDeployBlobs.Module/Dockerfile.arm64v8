@@ -1,8 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
 
+ARG VERSION=0.0.0-amd64
+ARG FILE_VERSION=0.0.0.0
+ARG ASSEMBLY_VERSION=0.0.0
+
+RUN echo $VERSION
+RUN echo $FILE_VERSION 
+RUN echo $ASSEMBLY_VERSION
+
 COPY . ./
-RUN dotnet publish IoTEdgeDeployBlobs.Module -c Release -o out -r linux-arm64 --self-contained false
+RUN dotnet publish IoTEdgeDeployBlobs.Module -c Release -o out -r linux-arm64 --self-contained false /p:Version=$VERSION /p:FileVersion=$FILE_VERSION /p:AssemblyVersion=$ASSEMBLY_VERSION
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-buster-slim-arm64v8
 WORKDIR /app

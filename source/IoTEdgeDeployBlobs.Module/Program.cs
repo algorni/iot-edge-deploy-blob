@@ -51,7 +51,7 @@ namespace IoTEdgeDeployBlobs.Module
             ModuleClient ioTHubModuleClient = await ModuleClient.CreateFromEnvironmentAsync(settings);
 
             await ioTHubModuleClient.OpenAsync();
-            ioTHubModuleClient.ProductInfo = "DeployBlobs v<TO_BE_DEFINED>";
+            ioTHubModuleClient.ProductInfo = GetProductInfo();
 
             Console.WriteLine(new String('-', 40));
             Console.WriteLine($"Starting Module {ioTHubModuleClient.ProductInfo}");
@@ -83,6 +83,14 @@ namespace IoTEdgeDeployBlobs.Module
 
             Console.WriteLine("Ready to receive download requests. Waiting DirectMethod calls to Initiate Blob Download.");
             Console.WriteLine();
+        }
+
+        private static string GetProductInfo()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            var informationVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            return $"IoTEdgeDeployBlobs.Module v{fvi.ProductVersion} - FileVersion: v{fvi.FileVersion}.";
         }
     }
 }
