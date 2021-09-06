@@ -2,7 +2,7 @@
     "$schema-version": "0.0.1",
     "description": "",
   "image": {
-    "repository": "localhost:5000/IoTEdgeDeployBlobs.Module",
+    "repository": "localhost:5000/iotedgedeployblobs",
     "tag": {
       "version": "2",
       "platforms": {

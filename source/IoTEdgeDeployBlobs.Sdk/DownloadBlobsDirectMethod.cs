@@ -74,6 +74,7 @@ namespace IoTEdgeDeployBlobs.Sdk
                 using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
                 FileStream fs = File.Create(blobInfo.DownloadPath, 1024, FileOptions.Asynchronous);
                 await contentStream.CopyToAsync(fs);
+                fs.Flush();
                 fs.Close();
             }
             else

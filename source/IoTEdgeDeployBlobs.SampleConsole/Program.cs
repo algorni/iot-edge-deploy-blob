@@ -166,9 +166,13 @@ namespace IoTEdgeDeployBlobs.Cli
             ILogger<AzureStorage> storageLogger = _loggerFactory.CreateLogger<AzureStorage>();
             AzureStorage azureStorageHelper = new(storageLogger);
             var stroageBlobContainerUri = new Uri(_stroageBlobContainerUrl);
-            await azureStorageHelper.UploadBlobToStorageAsync(_stroageAccountName, _storageKey, stroageBlobContainerUri, localFile, blobName);
-            var blobSasUrl = azureStorageHelper.GetBlobDownloadUri(_stroageAccountName, _storageKey, stroageBlobContainerUri, blobName, TimeSpan.FromMinutes(10));
 
+            //Upload the blob into the Azure Storage Account in this case using the storage key.
+            //AzureStorage helper class support using also the "DefaultAzureCredential" therefore you can also use an Azure Active Directory Principal or a Managed Identity (in case you run this code within Azure on a supported service).
+            await azureStorageHelper.UploadBlobToStorageAsync(_stroageAccountName, _storageKey, stroageBlobContainerUri, localFile, blobName);
+
+            //same here, retreive the blob Sas Url to being able to download within 10 minutes the blob from the module.
+            var blobSasUrl = azureStorageHelper.GetBlobDownloadUri(_stroageAccountName, _storageKey, stroageBlobContainerUri, blobName, TimeSpan.FromMinutes(10));
 
             BlobInfo blobInfo = new()
             {
@@ -176,6 +180,7 @@ namespace IoTEdgeDeployBlobs.Cli
                 SasUrl = blobSasUrl.ToString(),
                 DownloadPath = blobDownloadPath
             };
+
             return blobInfo;
         }
         private static void PrintResponseInfo(BlobResponseInfo response)
