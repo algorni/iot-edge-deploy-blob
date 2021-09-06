@@ -80,7 +80,7 @@ namespace IoTEdgeDeployBlobs.Cli
         {
             Console.WriteLine("> Deploy to Single Devices thru Direct Method:");
 
-            var response = await _deployBlobs.DeployBlobsAsync(_iotEdgeDeviceId, blobs);
+            var response = await _deployBlobs.DeployBlobsAsync(_iotEdgeDeviceId, blobs, 120);
             foreach (var blobResponse in response.Blobs)
             {
                 PrintResponseInfo(blobResponse);
@@ -97,7 +97,7 @@ namespace IoTEdgeDeployBlobs.Cli
             {
                 //the following scheduled job will deploy the blobs to all devices running the IoTEdgeDeployBlobs module
                 Console.WriteLine("Targeting to all Edge Devices running DeployBlobsModule.");
-                jobResponse = await _deployBlobs.ScheduleDeployBlobsJobAsync(blobs);
+                jobResponse = await _deployBlobs.ScheduleDeployBlobsJobAsync(blobs, methodTimeout:120);
             }
             else
             {

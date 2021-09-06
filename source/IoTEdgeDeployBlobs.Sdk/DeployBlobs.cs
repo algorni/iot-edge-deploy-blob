@@ -28,9 +28,9 @@ namespace IoTEdgeDeployBlobs.Sdk
             _logger?.LogInformation("Module dependencies Service Client, RegistryManager and JobClient ready.");
         }
 
-        public async Task<DownloadBlobsResponse> DeployBlobsAsync(string targetEdgeDeviceId, IEnumerable<BlobInfo> blobs)
+        public async Task<DownloadBlobsResponse> DeployBlobsAsync(string targetEdgeDeviceId, IEnumerable<BlobInfo> blobs, int methodTimeout = 30)
         {
-            CloudToDeviceMethod methodRequest = PrepareDownloadBlobsDirectMethod(blobs);
+            CloudToDeviceMethod methodRequest = PrepareDownloadBlobsDirectMethod(blobs, methodTimeout);
 
             //perform a Direct Method to the remote device to initiate the device stream!
             CloudToDeviceMethodResult response = await _serviceClient.InvokeDeviceMethodAsync(targetEdgeDeviceId, _deployBlobsModuleName, methodRequest);
@@ -46,11 +46,11 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobs">List of blobs to be downloaded by the deployBlob module at the target devices.</param>
         /// <param name="queryCondition">Query condition to filter target devices based on the 'devices.modules' schema.</param>
         /// <returns></returns>
-        public async Task<JobResponse> ScheduleDeployBlobsJobAsync(List<BlobInfo> blobs, string queryCondition = "")
+        public async Task<JobResponse> ScheduleDeployBlobsJobAsync(List<BlobInfo> blobs, string queryCondition = "", int methodTimeout = 30)
         {
             string jobId = Guid.NewGuid().ToString();
 
-            var downloadMethod = PrepareDownloadBlobsDirectMethod(blobs);
+            CloudToDeviceMethod downloadMethod = PrepareDownloadBlobsDirectMethod(blobs, methodTimeout);
 
             string deployBlobsModuleCondition = $"FROM devices.modules WHERE devices.modules.moduleId = '{_deployBlobsModuleName}'";
             if (!String.IsNullOrWhiteSpace(queryCondition))
@@ -150,14 +150,14 @@ namespace IoTEdgeDeployBlobs.Sdk
             return ids;
         }
 
-        private static CloudToDeviceMethod PrepareDownloadBlobsDirectMethod(IEnumerable<BlobInfo> blobs)
+        private static CloudToDeviceMethod PrepareDownloadBlobsDirectMethod(IEnumerable<BlobInfo> blobs, int methodTimeout = 30)
         {
             DownloadBlobsRequest downloadBlobRequest = new();
             downloadBlobRequest.Blobs.AddRange(blobs);
 
             var methodRequest = new CloudToDeviceMethod(
                     DownloadBlobsDirectMethod.DownloadBlobMethodName,
-                    TimeSpan.FromSeconds(30),  //It could get a time out if the download takes more than 30 seconds
+                    TimeSpan.FromSeconds(methodTimeout),  //It could get a time out if the download takes more than defined seconds
                     TimeSpan.FromSeconds(5)
             );
 
