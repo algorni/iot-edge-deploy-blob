@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using Azure.Core;
 
 namespace IoTEdgeDeployBlobs.Sdk
 {
@@ -17,6 +18,7 @@ namespace IoTEdgeDeployBlobs.Sdk
         private readonly ILogger _logger;
         private readonly JobClient _jobClient;
 
+
         public DeployBlobs(string iotHubConnectionString, string deployBlobsModuleName, ILogger logger = null)
         {
             _deployBlobsModuleName = deployBlobsModuleName;
@@ -27,6 +29,21 @@ namespace IoTEdgeDeployBlobs.Sdk
 
             _logger?.LogInformation("Module dependencies Service Client, RegistryManager and JobClient ready.");
         }
+
+
+        public DeployBlobs(TokenCredential tokenCredential, string iotHubHostname,  string deployBlobsModuleName, ILogger logger = null)
+        {
+            _deployBlobsModuleName = deployBlobsModuleName;
+            _logger = logger;
+            _serviceClient = ServiceClient.Create(iotHubHostname, tokenCredential, TransportType.Amqp);
+
+            _registryManager = RegistryManager.Create(iotHubHostname, tokenCredential);
+
+            _jobClient = JobClient.Create(iotHubHostname, tokenCredential);
+
+            _logger?.LogInformation("Module dependencies Service Client, RegistryManager and JobClient ready.");
+        }
+
 
         public async Task<DownloadBlobsResponse> DeployBlobsAsync(string targetEdgeDeviceId, IEnumerable<BlobInfo> blobs, int methodTimeout = 30)
         {

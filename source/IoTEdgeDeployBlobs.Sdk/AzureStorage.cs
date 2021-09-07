@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -25,11 +26,9 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobContainerUri"></param>
         /// <param name="blobLocalPath"></param>
         /// <returns></returns>
-        public async Task UploadBlobToStorageAsync(Uri blobContainerUri, string blobLocalPath, string blobName)
-        {
-            DefaultAzureCredential defaultAzureCredential = new();
-
-            BlobContainerClient blobContainerClient = new(blobContainerUri, defaultAzureCredential);
+        public async Task UploadBlobToStorageAsync(TokenCredential tokenCredential, Uri blobContainerUri, string blobLocalPath, string blobName)
+        {   
+            BlobContainerClient blobContainerClient = new(blobContainerUri, tokenCredential);
 
             await UploadBlobToStorageAsync(blobContainerClient, blobLocalPath, blobName);
         }
@@ -84,11 +83,9 @@ namespace IoTEdgeDeployBlobs.Sdk
         /// <param name="blobName"></param>
         /// <param name="expireIn"></param>
         /// <returns></returns>
-        public Uri GetBlobDownloadUri(Uri blobContainerUri, string blobName, TimeSpan expireIn)
-        {
-            DefaultAzureCredential defaultAzureCredential = new();
-
-            BlobContainerClient blobContainerClient = new(blobContainerUri, defaultAzureCredential);
+        public Uri GetBlobDownloadUri(TokenCredential tokenCredential, Uri blobContainerUri, string blobName, TimeSpan expireIn)
+        {  
+            BlobContainerClient blobContainerClient = new(blobContainerUri, tokenCredential);
 
             return GetBlobDownloadUri(blobContainerClient, blobName, expireIn);
         }
